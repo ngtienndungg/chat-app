@@ -7,4 +7,8 @@
     <string name="sign_in">Đăng nhập</string>
     <string name="forgot_password">Quên mật khẩu?</string>
     <string name="create_an_account">Tạo tài khoản mới</string>
+    <string name="select_image">Chọn ảnh</string>
+    <string name="name">Họ Tên</string>
+    <string name="confirm_password">Xác Nhận Mật Khẩu</string>
+    <string name="sign_up">Đăng ký</string>
 </resources>

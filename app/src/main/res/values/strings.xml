@@ -7,4 +7,8 @@
     <string name="sign_in">Sign in</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="create_an_account">Create an account</string>
+    <string name="select_image">Select image</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up">Sign up</string>
 </resources>
