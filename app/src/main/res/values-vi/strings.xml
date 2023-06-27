@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Trò chuyện</string>
+    <string name="welcome_back">Chào mừng quay trở lại</string>
+    <string name="login_to_continue">Đăng nhập để tiếp tục</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="create_an_account">Tạo tài khoản mới</string>
+</resources>

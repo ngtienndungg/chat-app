@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Chat</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="create_an_account">Create an account</string>
 </resources>
