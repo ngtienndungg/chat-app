@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,4 +48,8 @@ dependencies {
 
     // Rounded image
     implementation("com.makeramen:roundedimageview:2.3.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
+
 }
