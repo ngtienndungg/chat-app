@@ -11,4 +11,15 @@
     <string name="name">Họ Tên</string>
     <string name="confirm_password">Xác Nhận Mật Khẩu</string>
     <string name="sign_up">Đăng ký</string>
+    <string name="toast_empty_profile_image">Vui lòng chọn ảnh đại diện</string>
+    <string name="toast_empty_name">Vui lòng nhập tên của bạn</string>
+    <string name="toast_empty_email">Vui lòng nhập email của bạn</string>
+    <string name="toast_empty_password">Vui lòng nhập mật khẩu</string>
+    <string name="toast_empty_confirm_password">Vui lòng xác nhận mật khẩu</string>
+    <string name="toast_invalid_email">Vui lòng nhập email hợp lệ</string>
+    <string name="toast_not_match_password">Xác nhận mật khẩu không trùng khớp</string>
+    <string name="toast_something_wrong">Đã có lỗi xảy ra</string>
+    <string name="change_image">Thay đổi ảnh</string>
+    <string name="check_email">Chúng tôi đã gửi đường dẫn xác thực đến email của bạn. Vui lòng kiểm tra hộp thư.</string>
+    <string name="go_to_login">Đi đến đăng nhập</string>
 </resources>
