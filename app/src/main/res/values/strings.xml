@@ -12,11 +12,11 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_up">Sign up</string>
     <string name="toast_empty_profile_image">Please select profile image</string>
-    <string name="set_error_empty_name">Name can\'t be empty. Please enter your name</string>
-    <string name="set_error_empty_email">Email can\'t be empty. Please enter your email</string>
-    <string name="set_error_empty_password">Password can\'t be empty. Please enter password</string>
-    <string name="set_error_empty_confirm_password">Confirm password can\'t be empty. Please enter confirm password</string>
-    <string name="set_error_invalid_email">Email is invalid. Please enter valid email</string>
+    <string name="set_error_empty_name">Name can\'t be empty</string>
+    <string name="set_error_empty_email">Email can\'t be empty</string>
+    <string name="set_error_empty_password">Password can\'t be empty</string>
+    <string name="set_error_empty_confirm_password">Confirm password can\'t be empty</string>
+    <string name="set_error_invalid_email">Email is invalid</string>
     <string name="set_error_not_match_password">Password and confirm password must be the same</string>
     <string name="toast_something_wrong">Something wrong happened</string>
     <string name="set_error_email_already_use">The email address is already in use by another account</string>
@@ -24,4 +24,7 @@
     <string name="change_image">Change image</string>
     <string name="check_email">We have sent an email with a confirmation link to your email address. Please check your email.</string>
     <string name="go_to_login">Go to login</string>
+    <string name="login_failure">* Login failed. Incorrect email or password.</string>
+    <string name="not_verify">* You are not allowed to login. You need to verify your email. Please check your email inbox.</string>
+    <string name="back_to_login">Back to login</string>
 </resources>
