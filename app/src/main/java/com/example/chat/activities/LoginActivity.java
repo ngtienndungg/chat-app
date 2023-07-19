@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -41,8 +40,10 @@ public class LoginActivity extends AppCompatActivity {
             setError(binding.activityLoginEtInputPassword, getString(R.string.set_error_empty_password));
         } else {
             loading(true);
+
             String email = binding.activityLoginEtInputEmail.getText().toString().trim();
             String password = binding.activityLoginEtInputPassword.getText().toString();
+
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
@@ -57,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
                                 loading(false);
                                 setNotification(getString(R.string.not_verify));
                                 FirebaseAuth.getInstance().signOut();
-                                Toast.makeText(this, currentUser.getEmail(), Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             loading(false);

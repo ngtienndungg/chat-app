@@ -18,13 +18,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chat.R;
 import com.example.chat.databinding.ActivityRegisterBinding;
+import com.example.chat.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -81,14 +84,29 @@ public class RegisterActivity extends AppCompatActivity {
             loading(true);
             String email = binding.activityRegisterEtInputEmail.getText().toString().trim();
             String password = binding.activityRegisterEtInputPassword.getText().toString();
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, createTask -> {
                         if (createTask.isSuccessful()) {
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            Objects.requireNonNull(user).sendEmailVerification().addOnCompleteListener(sendTask -> {
-                                loading(false);
-                                startActivity(new Intent(RegisterActivity.this, NotificationActivity.class));
-                            });
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                user.sendEmailVerification().addOnCompleteListener(task -> {
+                                    FirebaseFirestore database = FirebaseFirestore.getInstance();
+                                    HashMap<String, Object> data = new HashMap<>();
+                                    data.put(Constants.KEY_USER_ID, user.getUid());
+                                    data.put(Constants.KEY_NAME, binding.activityRegisterEtInputName.getText().toString());
+                                    data.put(Constants.KEY_EMAIL, binding.activityRegisterEtInputEmail.getText().toString());
+                                    data.put(Constants.KEY_PASSWORD, binding.activityRegisterEtInputPassword.getText().toString());
+                                    data.put(Constants.KEY_IMAGE, encodedImage);
+
+                                    database.collection(Constants.KEY_COLLECTION_USERS).add(data);
+                                    loading(false);
+                                    Intent intent = new Intent(RegisterActivity.this, NotificationActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    FirebaseAuth.getInstance().signOut();
+                                });
+                            }
                         } else {
                             loading(false);
                             String errorCode = ((FirebaseAuthException) Objects.requireNonNull(createTask.getException())).getErrorCode();
@@ -103,6 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
         }
+
     }
 
     private String encodeImage(Bitmap bitmap) {

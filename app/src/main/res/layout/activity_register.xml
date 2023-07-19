@@ -133,7 +133,7 @@
             android:layout_height="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_8sdp"
             android:backgroundTint="@color/colorInputBackground"
-            android:text="@string/sign_in"
+            android:text="@string/back_to_login"
             android:textAllCaps="true"
             android:textColor="@color/colorReceivedMessageBackground"
             android:textSize="@dimen/_13sdp"
