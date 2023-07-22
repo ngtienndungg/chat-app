@@ -9,8 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chat.R;
 import com.example.chat.databinding.ActivityLoginBinding;
+import com.example.chat.utilities.Constants;
+import com.example.chat.utilities.PreferenceManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
@@ -50,8 +54,24 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                             if (Objects.requireNonNull(currentUser).isEmailVerified()) {
                                 loading(false);
+                                FirebaseFirestore database = FirebaseFirestore.getInstance();
+                                database.collection(Constants.KEY_COLLECTION_USERS)
+                                        .whereEqualTo(Constants.KEY_EMAIL, binding.activityLoginEtInputEmail.getText().toString())
+                                        .whereEqualTo(Constants.KEY_PASSWORD, binding.activityLoginEtInputPassword.getText().toString())
+                                        .get()
+                                        .addOnCompleteListener(documentTask -> {
+                                            if (documentTask.getResult() != null && documentTask.getResult().getDocuments().size() > 0) {
+                                                DocumentSnapshot documentSnapshot = documentTask.getResult().getDocuments().get(0);
+                                                PreferenceManager preferenceManager = new PreferenceManager(this);
+                                                preferenceManager.putData(Constants.KEY_NAME, documentSnapshot.getString(Constants.KEY_NAME));
+                                                preferenceManager.putData(Constants.KEY_EMAIL, documentSnapshot.getString(Constants.KEY_EMAIL));
+                                                preferenceManager.putData(Constants.KEY_IMAGE, documentSnapshot.getString(Constants.KEY_IMAGE));
+                                                preferenceManager.putData(Constants.KEY_USER_ID, documentSnapshot.getString(Constants.KEY_USER_ID));
+                                            }
+                                        });
+
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();
                             } else {
