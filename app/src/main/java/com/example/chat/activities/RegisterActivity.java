@@ -85,26 +85,29 @@ public class RegisterActivity extends AppCompatActivity {
             String email = binding.activityRegisterEtInputEmail.getText().toString().trim();
             String password = binding.activityRegisterEtInputPassword.getText().toString();
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, createTask -> {
                         if (createTask.isSuccessful()) {
+                            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password);
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
                                 user.sendEmailVerification().addOnCompleteListener(task -> {
-                                    FirebaseFirestore database = FirebaseFirestore.getInstance();
-                                    HashMap<String, Object> data = new HashMap<>();
-                                    data.put(Constants.KEY_USER_ID, user.getUid());
-                                    data.put(Constants.KEY_NAME, binding.activityRegisterEtInputName.getText().toString());
-                                    data.put(Constants.KEY_EMAIL, binding.activityRegisterEtInputEmail.getText().toString());
-                                    data.put(Constants.KEY_PASSWORD, binding.activityRegisterEtInputPassword.getText().toString());
-                                    data.put(Constants.KEY_IMAGE, encodedImage);
+                                    if (task.isSuccessful()) {
+                                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password);
+                                        FirebaseFirestore database = FirebaseFirestore.getInstance();
+                                        HashMap<String, Object> data = new HashMap<>();
+                                        data.put(Constants.KEY_NAME, binding.activityRegisterEtInputName.getText().toString());
+                                        data.put(Constants.KEY_EMAIL, binding.activityRegisterEtInputEmail.getText().toString());
+                                        data.put(Constants.KEY_IMAGE, encodedImage);
+                                        database.collection(Constants.KEY_COLLECTION_USERS).document(user.getUid()).set(data);
 
-                                    database.collection(Constants.KEY_COLLECTION_USERS).add(data);
-                                    loading(false);
-                                    Intent intent = new Intent(RegisterActivity.this, NotificationActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    FirebaseAuth.getInstance().signOut();
+                                        loading(false);
+                                        Intent intent = new Intent(RegisterActivity.this, NotificationActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        FirebaseAuth.getInstance().signOut();
+                                    }
                                 });
                             }
                         } else {
