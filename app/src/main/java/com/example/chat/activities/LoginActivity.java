@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
             setError(binding.activityLoginEtInputPassword, getString(R.string.set_error_empty_password));
         } else {
             loading(true);
-
             String email = binding.activityLoginEtInputEmail.getText().toString().trim();
             String password = binding.activityLoginEtInputPassword.getText().toString();
 
@@ -53,11 +52,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                             if (Objects.requireNonNull(currentUser).isEmailVerified()) {
-                                loading(false);
                                 FirebaseFirestore database = FirebaseFirestore.getInstance();
                                 database.collection(Constants.KEY_COLLECTION_USERS)
-                                        .whereEqualTo(Constants.KEY_EMAIL, binding.activityLoginEtInputEmail.getText().toString())
-                                        .whereEqualTo(Constants.KEY_PASSWORD, binding.activityLoginEtInputPassword.getText().toString())
+                                        .whereEqualTo(Constants.KEY_EMAIL, email)
                                         .get()
                                         .addOnCompleteListener(documentTask -> {
                                             if (documentTask.getResult() != null && documentTask.getResult().getDocuments().size() > 0) {
@@ -66,14 +63,14 @@ public class LoginActivity extends AppCompatActivity {
                                                 preferenceManager.putData(Constants.KEY_NAME, documentSnapshot.getString(Constants.KEY_NAME));
                                                 preferenceManager.putData(Constants.KEY_EMAIL, documentSnapshot.getString(Constants.KEY_EMAIL));
                                                 preferenceManager.putData(Constants.KEY_IMAGE, documentSnapshot.getString(Constants.KEY_IMAGE));
-                                                preferenceManager.putData(Constants.KEY_USER_ID, documentSnapshot.getString(Constants.KEY_USER_ID));
+
+                                                loading(false);
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
                                             }
                                         });
-
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                finish();
                             } else {
                                 loading(false);
                                 setNotification(getString(R.string.not_verify));
