@@ -37,10 +37,7 @@ public class User implements Serializable {
         this.fcmToken = fcmToken;
     }
 
-    public User(String name, String email, String image, String fcmToken) {
-        this.name = name;
-        this.email = email;
-        this.image = image;
-        this.fcmToken = fcmToken;
+    public User() {
+
     }
 }

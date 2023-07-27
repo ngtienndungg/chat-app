@@ -29,4 +29,5 @@
     <string name="back_to_login">Back to login</string>
     <string name="select_user">Select user</string>
     <string name="add_icon">Add icon</string>
+    <string name="no_user">No user available</string>
 </resources>

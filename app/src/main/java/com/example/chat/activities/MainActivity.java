@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void eventHandling() {
         binding.activityMainIvSignOut.setOnClickListener(v -> signOut());
+        binding.activityMainBtAddMessage.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, UserActivity.class));
+        });
     }
 
     private void signOut() {
