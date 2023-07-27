@@ -28,4 +28,5 @@
     <string name="not_verify">* Bạn chưa thể đăng nhập. Bạn cần xác thực email. Vui lòng kiểm tra hộp thư.</string>
     <string name="back_to_login">Quay lại đăng nhập</string>
     <string name="select_user">Chọn người dùng</string>
+    <string name="add_icon">Biểu tượng thêm</string>
 </resources>
