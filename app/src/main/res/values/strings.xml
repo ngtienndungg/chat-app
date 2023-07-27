@@ -30,4 +30,5 @@
     <string name="select_user">Select user</string>
     <string name="add_icon">Add icon</string>
     <string name="no_user">No user available</string>
+    <string name="type_a_message">Type a message</string>
 </resources>

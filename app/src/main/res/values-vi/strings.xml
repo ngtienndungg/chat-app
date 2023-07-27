@@ -30,4 +30,5 @@
     <string name="select_user">Chọn người dùng</string>
     <string name="add_icon">Biểu tượng thêm</string>
     <string name="no_user">Không có người dùng</string>
+    <string name="type_a_message">Nhập tin nhắn</string>
 </resources>
