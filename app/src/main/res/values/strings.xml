@@ -27,4 +27,5 @@
     <string name="login_failure">* Login failed. Incorrect email or password.</string>
     <string name="not_verify">* You are not allowed to login. You need to verify your email. Please check your email inbox.</string>
     <string name="back_to_login">Back to login</string>
+    <string name="select_user">Select user</string>
 </resources>
