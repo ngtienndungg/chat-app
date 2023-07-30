@@ -36,8 +36,4 @@ public class User implements Serializable {
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
-
-    public User() {
-
-    }
 }
