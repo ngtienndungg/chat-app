@@ -1,5 +1,6 @@
 package com.example.chat.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.UserAdapter;
 import com.example.chat.databinding.ActivityUserBinding;
+import com.example.chat.listeners.UserListener;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends AppCompatActivity implements UserListener {
     private ActivityUserBinding binding;
 
     @Override
@@ -57,7 +59,7 @@ public class UserActivity extends AppCompatActivity {
                             users.add(user);
                         }
                         if (users.size() > 0) {
-                            UserAdapter userAdapter = new UserAdapter(users);
+                            UserAdapter userAdapter = new UserAdapter(users, this);
                             binding.activityUserRvUser.setAdapter(userAdapter);
                             binding.activityUserRvUser.setVisibility(View.VISIBLE);
                         } else {
@@ -80,5 +82,13 @@ public class UserActivity extends AppCompatActivity {
         } else {
             binding.activityUserPbLoading.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onUserClicked(User user) {
+        Intent intent = new Intent(UserActivity.this, ChatActivity.class);
+        intent.putExtra(Constants.KEY_USER, user);
+        startActivity(intent);
+        finish();
     }
 }
