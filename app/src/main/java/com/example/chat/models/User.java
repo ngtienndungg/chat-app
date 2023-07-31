@@ -3,7 +3,15 @@ package com.example.chat.models;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String name, email, image, fcmToken;
+    private String name, email, image, fcmToken, id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
