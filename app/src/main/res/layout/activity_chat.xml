@@ -56,6 +56,7 @@
     <View
         android:id="@+id/activity_chat_vSupporter"
         android:layout_width="match_parent"
+        android:background="@color/primaryColor"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/_10sdp"
         app:layout_constraintTop_toBottomOf="@id/activity_chat_ivBack" />
@@ -71,7 +72,8 @@
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="@id/activity_chat_vBackground"
-        app:layout_constraintTop_toBottomOf="@id/activity_chat_vSupporter" />
+        app:layout_constraintTop_toBottomOf="@id/activity_chat_vSupporter"
+        app:stackFromEnd="true" />
 
     <ProgressBar
         android:id="@+id/activity_chat_pbLoading"
