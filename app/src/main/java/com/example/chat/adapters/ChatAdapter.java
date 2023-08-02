@@ -63,7 +63,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return 0;
+        return messages.size();
     }
 
     public static class SentMessageViewHolder extends RecyclerView.ViewHolder {
@@ -76,7 +76,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void setData(Message message) {
             binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
-            binding.itemContainerSentMessageTvDatetime.setText(message.getMessageContent());
+            binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());
         }
     }
 
@@ -91,7 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void setData(Message message, Bitmap profileImage) {
             binding.itemContainerReceivedMessageIvProfile.setImageBitmap(profileImage);
             binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
-            binding.itemContainerReceivedMessageTvMessage.setText(message.getDateTime());
+            binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
         }
     }
 

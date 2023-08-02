@@ -1,7 +1,22 @@
 package com.example.chat.models;
 
+import java.util.Date;
+
 public class Message {
     private String senderId, receiverId, messageContent, dateTime;
+    private Date dateObject;
+
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
+    }
+
+    public Date getDateObject() {
+        return dateObject;
+    }
+
+    public void setDateObject(Date date) {
+        this.dateObject = date;
+    }
 
     public String getSenderId() {
         return senderId;
