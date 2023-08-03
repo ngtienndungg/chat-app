@@ -4,12 +4,15 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.chat.R;
 import com.example.chat.adapters.ChatAdapter;
 import com.example.chat.databinding.ActivityChatBinding;
 import com.example.chat.models.Message;
@@ -44,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        binding.activityChatIvSend.setColorFilter(getColor(R.color.primaryColor));
         initiate();
         eventHandling();
         listenMessages();
@@ -52,6 +56,28 @@ public class ChatActivity extends AppCompatActivity {
     private void eventHandling() {
         binding.activityChatIvBack.setOnClickListener(v -> onBackPressed());
         binding.activityChatFlSend.setOnClickListener(v -> sendMessage());
+        binding.activityChatEtMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (binding.activityChatEtMessage.getText().toString().trim().length() == 0) {
+                    binding.activityChatIvSend.setColorFilter(getColor(R.color.secondaryText));
+                    binding.activityChatFlSend.setEnabled(false);
+                } else {
+                    binding.activityChatIvSend.setColorFilter(getColor(R.color.colorWhite));
+                    binding.activityChatFlSend.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private Bitmap getProfileImage(String encodedImage) {
@@ -60,6 +86,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void initiate() {
+        binding.activityChatFlSend.setEnabled(false);
         receivedUser = (User) getIntent().getSerializableExtra(Constants.KEY_USER);
         currentUserId = FirebaseAuth.getInstance().getUid();
         binding.activityChatTvName.setText(Objects.requireNonNull(receivedUser).getName());

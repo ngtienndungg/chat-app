@@ -56,9 +56,9 @@
     <View
         android:id="@+id/activity_chat_vSupporter"
         android:layout_width="match_parent"
-        android:background="@color/primaryColor"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/_10sdp"
+        android:background="@color/primaryColor"
         app:layout_constraintTop_toBottomOf="@id/activity_chat_ivBack" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -107,6 +107,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/activity_chat_ivSend"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/_4sdp"
