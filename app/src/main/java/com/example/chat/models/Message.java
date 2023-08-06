@@ -3,8 +3,38 @@ package com.example.chat.models;
 import java.util.Date;
 
 public class Message {
-    private String senderId, receiverId, messageContent, dateTime;
+    private String senderId;
+    private String receiverId;
+    private String messageContent;
+    private String dateTime;
+    private String conversationId;
+    private String conversationName;
+    private String conversationImage;
     private Date dateObject;
+
+    public String getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(String conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public String getConversationName() {
+        return conversationName;
+    }
+
+    public void setConversationName(String conversationName) {
+        this.conversationName = conversationName;
+    }
+
+    public String getConversationImage() {
+        return conversationImage;
+    }
+
+    public void setConversationImage(String conversationImage) {
+        this.conversationImage = conversationImage;
+    }
 
     public void setMessageContent(String messageContent) {
         this.messageContent = messageContent;
