@@ -11,7 +11,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chat.R;
+import com.example.chat.adapters.RecentConversationAdapter;
 import com.example.chat.databinding.ActivityMainBinding;
+import com.example.chat.models.Message;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,13 +23,17 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private PreferenceManager preferenceManager;
-
+    private List<Message> conversations;
+    private RecentConversationAdapter recentConversationAdapter;
+    private FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +41,17 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(this);
+        initiate();
         eventHandling();
         displayUserProfile();
         getToken();
+    }
+
+    private void initiate() {
+        database = FirebaseFirestore.getInstance();
+        conversations = new ArrayList<>();
+        recentConversationAdapter = new RecentConversationAdapter(conversations);
+        binding.activityMainRvRecentMessage.setAdapter(recentConversationAdapter);
     }
 
     private void eventHandling() {

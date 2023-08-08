@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,8 +17,12 @@ import com.example.chat.databinding.ActivityChatBinding;
 import com.example.chat.models.Message;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
+import com.example.chat.utilities.PreferenceManager;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,9 +41,10 @@ public class ChatActivity extends AppCompatActivity {
     private User receivedUser;
     private ChatAdapter chatAdapter;
     private FirebaseFirestore database;
+    private PreferenceManager preferenceManager;
     private List<Message> messages;
     private String currentUserId;
-
+    private String conversationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,7 @@ public class ChatActivity extends AppCompatActivity {
         );
         binding.activityChatRvMessage.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void sendMessage() {
@@ -107,6 +112,20 @@ public class ChatActivity extends AppCompatActivity {
         message.put(Constants.KEY_MESSAGE, binding.activityChatEtMessage.getText().toString());
         message.put(Constants.KEY_TIMESTAMP, new Date());
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
+        if (conversationId != null) {
+            updateConversation(binding.activityChatEtMessage.getText().toString());
+        } else {
+            HashMap<String, Object> conversation = new HashMap<>();
+            conversation.put(Constants.KEY_SENDER_ID, currentUserId);
+            conversation.put(Constants.KEY_SENDER_NAME, preferenceManager.getData(Constants.KEY_NAME));
+            conversation.put(Constants.KEY_SENDER_IMAGE, preferenceManager.getData(Constants.KEY_IMAGE));
+            conversation.put(Constants.KEY_RECEIVER_ID, receivedUser.getId());
+            conversation.put(Constants.KEY_RECEIVER_NAME, receivedUser.getName());
+            conversation.put(Constants.KEY_RECEIVER_IMAGE, receivedUser.getImage());
+            conversation.put(Constants.KEY_LAST_MESSAGE, binding.activityChatEtMessage.getText().toString());
+            conversation.put(Constants.KEY_TIMESTAMP, new Date());
+            addConversation(conversation);
+        }
         binding.activityChatEtMessage.setText(null);
     }
 
@@ -141,7 +160,6 @@ public class ChatActivity extends AppCompatActivity {
                     message.setDateTime(formatDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP)));
                     message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     messages.add(message);
-                    Log.d("Message Check", message.getMessageContent() + " / " + message.getSenderId() + " / " + message.getReceiverId());
                 }
             }
             messages.sort(Comparator.comparing(Message::getDateObject));
@@ -152,8 +170,44 @@ public class ChatActivity extends AppCompatActivity {
                 binding.activityChatRvMessage.smoothScrollToPosition(messages.size() - 1);
             }
             binding.activityChatRvMessage.setVisibility(View.VISIBLE);
-            Log.d("Message Check", String.valueOf(messages.size()));
         }
         binding.activityChatPbLoading.setVisibility(View.GONE);
+        if (conversationId == null) {
+            checkConversation();
+        }
+    };
+
+    private void addConversation(HashMap<String, Object> conversation) {
+        database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
+                .add(conversation)
+                .addOnSuccessListener(documentReference -> conversationId = documentReference.getId());
+    }
+
+    private void updateConversation(String message) {
+        DocumentReference documentReference = database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
+                .document(conversationId);
+        documentReference.update(Constants.KEY_LAST_MESSAGE, message, Constants.KEY_TIMESTAMP, new Date());
+    }
+
+    private void checkConversation() {
+        if (messages.size() > 0) {
+            checkConversationFromFirestore(currentUserId, receivedUser.getId());
+            checkConversationFromFirestore(receivedUser.getId(), currentUserId);
+        }
+    }
+
+    private void checkConversationFromFirestore(String senderId, String receiverId) {
+        database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
+                .whereEqualTo(Constants.KEY_SENDER_ID, senderId)
+                .whereEqualTo(Constants.KEY_RECEIVER_ID, receiverId)
+                .get()
+                .addOnCompleteListener(conversationOnCompleteListener);
+    }
+
+    private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
+        if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
+            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+            conversationId = documentSnapshot.getId();
+        }
     };
 }
