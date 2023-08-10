@@ -14,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.RecentConversationAdapter;
 import com.example.chat.databinding.ActivityMainBinding;
+import com.example.chat.listeners.ChatListener;
 import com.example.chat.models.Message;
+import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +34,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ChatListener {
 
     private ActivityMainBinding binding;
     private PreferenceManager preferenceManager;
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseFirestore.getInstance();
         currentUserUid = FirebaseAuth.getInstance().getUid();
         conversations = new ArrayList<>();
-        recentConversationAdapter = new RecentConversationAdapter(conversations);
+        recentConversationAdapter = new RecentConversationAdapter(conversations, this);
         binding.activityMainRvRecentMessage.setAdapter(recentConversationAdapter);
     }
 
@@ -167,7 +169,13 @@ public class MainActivity extends AppCompatActivity {
             binding.activityMainRvRecentMessage.smoothScrollToPosition(0);
             binding.activityMainRvRecentMessage.setVisibility(View.VISIBLE);
             binding.activityChatPbLoading.setVisibility(View.GONE);
-            Toast.makeText(this, conversations.size() + " ", Toast.LENGTH_SHORT).show();
         }
     };
+
+    @Override
+    public void onRecentConversationClicked(User user) {
+        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+        intent.putExtra(Constants.KEY_USER, user);
+        startActivity(intent);
+    }
 }
