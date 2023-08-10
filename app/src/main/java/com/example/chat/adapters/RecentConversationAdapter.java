@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RecentConversationAdapter extends RecyclerView.Adapter<RecentConversationAdapter.RecentConversationViewHolder> {
     private final List<Message> messages;
-    private ChatListener chatListener;
+    private final ChatListener chatListener;
 
     public RecentConversationAdapter(List<Message> messages, ChatListener chatListener) {
         this.messages = messages;
@@ -59,7 +59,7 @@ public class RecentConversationAdapter extends RecyclerView.Adapter<RecentConver
             binding.itemContainerUserTvRecentMessage.setText(message.getMessageContent());
             binding.getRoot().setOnClickListener(v -> {
                 User receivedUser = new User();
-                receivedUser.setId(message.getReceiverId());
+                receivedUser.setId(message.getConversationId());
                 receivedUser.setName(message.getConversationName());
                 receivedUser.setImage(message.getConversationImage());
                 chatListener.onRecentConversationClicked(receivedUser);
