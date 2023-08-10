@@ -20,4 +20,5 @@ public class Constants {
     public static final String KEY_SENDER_IMAGE = "senderImage";
     public static final String KEY_RECEIVER_IMAGE = "receiverImage";
     public static final String KEY_LAST_MESSAGE = "lastMessage";
+    public final static String KEY_USER_AVAILABILITY = "userAvailability";
 }

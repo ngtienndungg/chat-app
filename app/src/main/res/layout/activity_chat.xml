@@ -23,7 +23,9 @@
         android:layout_height="0dp"
         android:background="@color/primaryColor"
         app:layout_constraintBottom_toTopOf="@id/activity_chat_vSupporter"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="0dp" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/activity_chat_ivBack"
@@ -52,6 +54,17 @@
         app:layout_constraintEnd_toStartOf="@id/activity_chat_ivInfo"
         app:layout_constraintStart_toEndOf="@id/activity_chat_ivBack"
         app:layout_constraintTop_toTopOf="@id/activity_chat_ivInfo" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/activity_chat_ivOnline"
+        android:layout_width="@dimen/_10sdp"
+        android:layout_height="@dimen/_10sdp"
+        android:src="@drawable/ic_online"
+        app:layout_constraintEnd_toStartOf="@id/activity_chat_ivInfo"
+        app:layout_constraintTop_toTopOf="@id/activity_chat_tvName"
+        app:layout_constraintBottom_toBottomOf="@id/activity_chat_tvName"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:visibility="invisible"/>
 
     <View
         android:id="@+id/activity_chat_vSupporter"
