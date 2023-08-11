@@ -204,10 +204,33 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnCompleteListener(conversationOnCompleteListener);
     }
 
+    private void listenUserAvailability() {
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .document(receivedUser.getId())
+                .addSnapshotListener(ChatActivity.this, (value, error) -> {
+                    if (error != null) {
+                        return;
+                    }
+                    if (value != null) {
+                        if (Boolean.TRUE.equals(value.getBoolean(Constants.KEY_USER_AVAILABILITY))) {
+                            binding.activityChatIvOnline.setVisibility(View.VISIBLE);
+                        } else {
+                            binding.activityChatIvOnline.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+    }
+
     private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
         if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
             DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
             conversationId = documentSnapshot.getId();
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listenUserAvailability();
+    }
 }
