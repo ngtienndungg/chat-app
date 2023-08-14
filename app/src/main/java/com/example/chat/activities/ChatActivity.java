@@ -8,14 +8,17 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 
 import com.example.chat.R;
 import com.example.chat.adapters.ChatAdapter;
 import com.example.chat.databinding.ActivityChatBinding;
 import com.example.chat.models.Message;
 import com.example.chat.models.User;
+import com.example.chat.network.ApiClient;
+import com.example.chat.network.ApiService;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +30,10 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,7 +43,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ChatActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ChatActivity extends BaseActivity {
     private ActivityChatBinding binding;
     private User receivedUser;
     private ChatAdapter chatAdapter;
@@ -45,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<Message> messages;
     private String currentUserId;
     private String conversationId;
+    private boolean isOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +137,26 @@ public class ChatActivity extends AppCompatActivity {
             conversation.put(Constants.KEY_LAST_MESSAGE, binding.activityChatEtMessage.getText().toString());
             conversation.put(Constants.KEY_TIMESTAMP, new Date());
             addConversation(conversation);
+        }
+        if (!isOnline) {
+            try {
+                JSONArray tokens = new JSONArray();
+                tokens.put(receivedUser.getFcmToken());
+
+                JSONObject data = new JSONObject();
+                data.put(Constants.KEY_USER_ID, currentUserId);
+                data.put(Constants.KEY_NAME, preferenceManager.getData(Constants.KEY_NAME));
+                data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getData(Constants.KEY_FCM_TOKEN));
+                data.put(Constants.KEY_MESSAGE, binding.activityChatEtMessage.getText().toString());
+
+                JSONObject body = new JSONObject();
+                body.put(Constants.REMOTE_MSG_DATA, data);
+                body.put(Constants.REMOTE_MSG_REGISTRATION_IDS, tokens);
+
+                sendNotification(body.toString());
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
         binding.activityChatEtMessage.setText(null);
     }
@@ -212,10 +244,13 @@ public class ChatActivity extends AppCompatActivity {
                         return;
                     }
                     if (value != null) {
+                        receivedUser.setFcmToken(value.getString(Constants.KEY_FCM_TOKEN));
                         if (Boolean.TRUE.equals(value.getBoolean(Constants.KEY_USER_AVAILABILITY))) {
                             binding.activityChatIvOnline.setVisibility(View.VISIBLE);
+                            isOnline = true;
                         } else {
                             binding.activityChatIvOnline.setVisibility(View.INVISIBLE);
+                            isOnline = false;
                         }
                     }
                 });
@@ -227,6 +262,40 @@ public class ChatActivity extends AppCompatActivity {
             conversationId = documentSnapshot.getId();
         }
     };
+
+    private void sendNotification(String messageBody) {
+        ApiClient.getClient().create(ApiService.class).sendMessage(
+                Constants.getRemoteMsgHeaders(),
+                messageBody
+        ).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()) {
+                        try {
+                            if (response.body() != null) {
+                                JSONObject responseJson = new JSONObject(response.body());
+                                JSONArray results = responseJson.getJSONArray("results");
+                                if (responseJson.getInt("failure") == 1) {
+                                    JSONObject error = (JSONObject) results.get(0);
+                                    Toast.makeText(ChatActivity.this, error.getString("error"), Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    Toast.makeText(ChatActivity.this, "Sent", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ChatActivity.this, response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast.makeText(ChatActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     protected void onResume() {

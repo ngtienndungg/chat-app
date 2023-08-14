@@ -108,6 +108,7 @@ public class MainActivity extends BaseActivity implements ChatListener {
     }
 
     private void updateToken(String token) {
+        preferenceManager.putData(Constants.KEY_FCM_TOKEN, token);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             DocumentReference documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
