@@ -45,6 +45,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return users.size();
     }
 
+    private Bitmap getUserImage(String encodedImage) {
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
     public class UserViewHolder extends RecyclerView.ViewHolder {
         private final ItemContainerUserBinding binding;
 
@@ -59,10 +64,5 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             binding.itemContainerUserIvProfile.setImageBitmap(getUserImage(user.getImage()));
             binding.getRoot().setOnClickListener(v -> userListener.onUserClicked(user));
         }
-    }
-
-    private Bitmap getUserImage(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }

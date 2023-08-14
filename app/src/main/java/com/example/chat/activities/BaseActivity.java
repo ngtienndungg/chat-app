@@ -14,6 +14,7 @@ import java.util.Objects;
 
 public class BaseActivity extends AppCompatActivity {
     private DocumentReference documentReference;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

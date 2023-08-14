@@ -59,12 +59,12 @@
         android:id="@+id/activity_chat_ivOnline"
         android:layout_width="@dimen/_10sdp"
         android:layout_height="@dimen/_10sdp"
-        android:src="@drawable/ic_online"
-        app:layout_constraintEnd_toStartOf="@id/activity_chat_ivInfo"
-        app:layout_constraintTop_toTopOf="@id/activity_chat_tvName"
-        app:layout_constraintBottom_toBottomOf="@id/activity_chat_tvName"
         android:layout_marginEnd="@dimen/_8sdp"
-        android:visibility="invisible"/>
+        android:src="@drawable/ic_online"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/activity_chat_tvName"
+        app:layout_constraintEnd_toStartOf="@id/activity_chat_ivInfo"
+        app:layout_constraintTop_toTopOf="@id/activity_chat_tvName" />
 
     <View
         android:id="@+id/activity_chat_vSupporter"

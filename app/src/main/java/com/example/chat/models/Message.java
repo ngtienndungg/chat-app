@@ -36,10 +36,6 @@ public class Message {
         this.conversationImage = conversationImage;
     }
 
-    public void setMessageContent(String messageContent) {
-        this.messageContent = messageContent;
-    }
-
     public Date getDateObject() {
         return dateObject;
     }
@@ -66,6 +62,10 @@ public class Message {
 
     public String getMessageContent() {
         return messageContent;
+    }
+
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
     }
 
     public void setMessage(String messageContent) {

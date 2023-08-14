@@ -14,16 +14,20 @@ import com.example.chat.models.Message;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final Bitmap receiverProfileImage;
-    private final List<Message> messages;
-    private final String senderId;
     private static final int VIEW_TYPE_SENT = 1;
     private static final int VIEW_TYPE_RECEIVE = 0;
+    private final List<Message> messages;
+    private final String senderId;
+    private Bitmap receiverProfileImage;
 
     public ChatAdapter(Bitmap receiverProfileImage, List<Message> messages, String senderId) {
         this.receiverProfileImage = receiverProfileImage;
         this.messages = messages;
         this.senderId = senderId;
+    }
+
+    public void setReceiverProfileImage(Bitmap bitmap) {
+        receiverProfileImage = bitmap;
     }
 
     @NonNull

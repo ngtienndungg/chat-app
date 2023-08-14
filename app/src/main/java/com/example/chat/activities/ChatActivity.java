@@ -56,6 +56,44 @@ public class ChatActivity extends BaseActivity {
     private List<Message> messages;
     private String currentUserId;
     private String conversationId;
+    private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
+        if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
+            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+            conversationId = documentSnapshot.getId();
+        }
+    };
+    @SuppressLint("NotifyDataSetChanged")
+    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
+        if (error != null) {
+            return;
+        }
+        if (value != null) {
+            int count = messages.size();
+            for (DocumentChange documentChange : value.getDocumentChanges()) {
+                if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                    Message message = new Message();
+                    message.setSenderId(documentChange.getDocument().getString(Constants.KEY_SENDER_ID));
+                    message.setReceiverId(documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID));
+                    message.setMessage(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
+                    message.setDateTime(formatDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP)));
+                    message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
+                    messages.add(message);
+                }
+            }
+            messages.sort(Comparator.comparing(Message::getDateObject));
+            if (count == 0) {
+                chatAdapter.notifyDataSetChanged();
+            } else {
+                chatAdapter.notifyItemRangeInserted(messages.size(), messages.size());
+                binding.activityChatRvMessage.smoothScrollToPosition(messages.size() - 1);
+            }
+            binding.activityChatRvMessage.setVisibility(View.VISIBLE);
+        }
+        binding.activityChatPbLoading.setVisibility(View.GONE);
+        if (conversationId == null) {
+            checkConversation();
+        }
+    };
     private boolean isOnline;
 
     @Override
@@ -97,8 +135,12 @@ public class ChatActivity extends BaseActivity {
     }
 
     private Bitmap getProfileImage(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        if (encodedImage != null) {
+            byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } else {
+            return null;
+        }
     }
 
     private void initiate() {
@@ -176,39 +218,6 @@ public class ChatActivity extends BaseActivity {
                 .addSnapshotListener(eventListener);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
-        if (error != null) {
-            return;
-        }
-        if (value != null) {
-            int count = messages.size();
-            for (DocumentChange documentChange : value.getDocumentChanges()) {
-                if (documentChange.getType() == DocumentChange.Type.ADDED) {
-                    Message message = new Message();
-                    message.setSenderId(documentChange.getDocument().getString(Constants.KEY_SENDER_ID));
-                    message.setReceiverId(documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID));
-                    message.setMessage(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
-                    message.setDateTime(formatDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP)));
-                    message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
-                    messages.add(message);
-                }
-            }
-            messages.sort(Comparator.comparing(Message::getDateObject));
-            if (count == 0) {
-                chatAdapter.notifyDataSetChanged();
-            } else {
-                chatAdapter.notifyItemRangeInserted(messages.size(), messages.size());
-                binding.activityChatRvMessage.smoothScrollToPosition(messages.size() - 1);
-            }
-            binding.activityChatRvMessage.setVisibility(View.VISIBLE);
-        }
-        binding.activityChatPbLoading.setVisibility(View.GONE);
-        if (conversationId == null) {
-            checkConversation();
-        }
-    };
-
     private void addConversation(HashMap<String, Object> conversation) {
         database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
                 .add(conversation)
@@ -252,16 +261,14 @@ public class ChatActivity extends BaseActivity {
                             binding.activityChatIvOnline.setVisibility(View.INVISIBLE);
                             isOnline = false;
                         }
+                        if (receivedUser.getImage() == null) {
+                            receivedUser.setImage(value.getString(Constants.KEY_IMAGE));
+                            chatAdapter.setReceiverProfileImage(getProfileImage(receivedUser.getImage()));
+                            chatAdapter.notifyItemRangeInserted(0, messages.size());
+                        }
                     }
                 });
     }
-
-    private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
-        if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
-            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
-            conversationId = documentSnapshot.getId();
-        }
-    };
 
     private void sendNotification(String messageBody) {
         ApiClient.getClient().create(ApiService.class).sendMessage(
@@ -271,28 +278,25 @@ public class ChatActivity extends BaseActivity {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful()) {
-                        try {
-                            if (response.body() != null) {
-                                JSONObject responseJson = new JSONObject(response.body());
-                                JSONArray results = responseJson.getJSONArray("results");
-                                if (responseJson.getInt("failure") == 1) {
-                                    JSONObject error = (JSONObject) results.get(0);
-                                    Toast.makeText(ChatActivity.this, error.getString("error"), Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
+                    try {
+                        if (response.body() != null) {
+                            JSONObject responseJson = new JSONObject(response.body());
+                            JSONArray results = responseJson.getJSONArray("results");
+                            if (responseJson.getInt("failure") == 1) {
+                                JSONObject error = (JSONObject) results.get(0);
+                                return;
                             }
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
                         }
-                    Toast.makeText(ChatActivity.this, "Sent", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ChatActivity.this, response.code(), Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(ChatActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
         });
     }

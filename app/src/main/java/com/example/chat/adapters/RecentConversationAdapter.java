@@ -45,6 +45,11 @@ public class RecentConversationAdapter extends RecyclerView.Adapter<RecentConver
         return messages.size();
     }
 
+    private Bitmap getProfileImage(String encodedImage) {
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
     public class RecentConversationViewHolder extends RecyclerView.ViewHolder {
         ItemContainerRecentConversationBinding binding;
 
@@ -65,10 +70,5 @@ public class RecentConversationAdapter extends RecyclerView.Adapter<RecentConver
                 chatListener.onRecentConversationClicked(receivedUser);
             });
         }
-    }
-
-    private Bitmap getProfileImage(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }
