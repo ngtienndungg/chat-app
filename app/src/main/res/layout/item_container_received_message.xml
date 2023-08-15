@@ -3,18 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/_8sdp"
+    android:layout_marginTop="@dimen/_2sdp"
     android:padding="@dimen/_4sdp">
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/item_container_received_message_ivProfile"
-        android:layout_width="@dimen/_25sdp"
-        android:layout_height="@dimen/_25sdp"
-        android:background="@drawable/background_image"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/item_container_received_message_tvMessage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:riv_oval="true" />
 
     <TextView
         android:id="@+id/item_container_received_message_tvMessage"
@@ -24,9 +14,9 @@
         android:background="@drawable/background_received_message"
         android:paddingHorizontal="@dimen/_12sdp"
         android:paddingVertical="@dimen/_8sdp"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlack"
         android:textSize="@dimen/_13ssp"
-        app:layout_constraintStart_toEndOf="@id/item_container_received_message_ivProfile"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="wrap"
         app:layout_constraintWidth_percent="0.75" />

@@ -93,7 +93,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void setData(Message message, Bitmap profileImage) {
-            binding.itemContainerReceivedMessageIvProfile.setImageBitmap(profileImage);
             binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
             binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
         }

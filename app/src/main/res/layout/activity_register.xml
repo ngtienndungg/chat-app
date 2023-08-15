@@ -135,7 +135,7 @@
             android:backgroundTint="@color/colorInputBackground"
             android:text="@string/back_to_login"
             android:textAllCaps="true"
-            android:textColor="@color/colorReceivedMessageBackground"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/_13sdp"
             android:textStyle="bold"
             app:cornerRadius="@dimen/_8sdp" />

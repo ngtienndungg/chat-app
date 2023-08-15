@@ -101,7 +101,7 @@ public class ChatActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.activityChatIvSend.setColorFilter(getColor(R.color.primaryColor));
+        binding.activityChatIvSend.setColorFilter(getColor(R.color.secondaryText));
         initiate();
         eventHandling();
         listenMessages();
@@ -122,7 +122,7 @@ public class ChatActivity extends BaseActivity {
                     binding.activityChatIvSend.setColorFilter(getColor(R.color.secondaryText));
                     binding.activityChatFlSend.setEnabled(false);
                 } else {
-                    binding.activityChatIvSend.setColorFilter(getColor(R.color.colorWhite));
+                    binding.activityChatIvSend.setColorFilter(getColor(R.color.colorSentIcon));
                     binding.activityChatFlSend.setEnabled(true);
                 }
             }
@@ -157,6 +157,7 @@ public class ChatActivity extends BaseActivity {
         binding.activityChatRvMessage.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
         preferenceManager = new PreferenceManager(this);
+        binding.activityChatIvProfileImage.setImageBitmap(getProfileImage(receivedUser.getImage()));
     }
 
     private void sendMessage() {
