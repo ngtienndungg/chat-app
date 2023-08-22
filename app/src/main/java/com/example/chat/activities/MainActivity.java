@@ -9,14 +9,20 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.chat.R;
 import com.example.chat.adapters.RecentConversationAdapter;
 import com.example.chat.databinding.ActivityMainBinding;
+import com.example.chat.fragments.FriendFragment;
+import com.example.chat.fragments.MessageFragment;
+import com.example.chat.fragments.ProfileFragment;
 import com.example.chat.listeners.ChatListener;
 import com.example.chat.models.Message;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
@@ -34,6 +40,46 @@ import java.util.List;
 
 public class MainActivity extends BaseActivity implements ChatListener {
 
+    Fragment mainFragment;
+    @SuppressLint("NonConstantResourceId")
+    private final NavigationBarView.OnItemSelectedListener onItemSelectedListener = item -> {
+        switch (item.getItemId()) {
+            case R.id.menu_item_message:
+                if (!(mainFragment instanceof MessageFragment)) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .remove(mainFragment);
+                    mainFragment = new MessageFragment();
+                    loadFragment(mainFragment);
+                    return true;
+                } else {
+                    return false;
+                }
+            case R.id.menu_item_friends:
+                if (!(mainFragment instanceof FriendFragment)) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .remove(mainFragment);
+                    mainFragment = new FriendFragment();
+                    loadFragment(mainFragment);
+                    return true;
+                } else {
+                    return false;
+                }
+            case R.id.menu_item_profile:
+                if (!(mainFragment instanceof ProfileFragment)) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .remove(mainFragment);
+                    mainFragment = new ProfileFragment();
+                    loadFragment(mainFragment);
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+        return false;
+    };
     private ActivityMainBinding binding;
     private PreferenceManager preferenceManager;
     private List<Message> conversations;
@@ -79,9 +125,9 @@ public class MainActivity extends BaseActivity implements ChatListener {
             }
             conversations.sort(Comparator.comparing(Message::getDateObject));
             recentConversationAdapter.notifyDataSetChanged();
-            binding.activityMainRvRecentMessage.smoothScrollToPosition(0);
-            binding.activityMainRvRecentMessage.setVisibility(View.VISIBLE);
-            binding.activityChatPbLoading.setVisibility(View.GONE);
+            // binding.activityMainRvRecentMessage.smoothScrollToPosition(0);
+            // binding.activityMainRvRecentMessage.setVisibility(View.VISIBLE);
+            // binding.activityChatPbLoading.setVisibility(View.GONE);
         }
     };
 
@@ -105,14 +151,21 @@ public class MainActivity extends BaseActivity implements ChatListener {
         currentUserUid = FirebaseAuth.getInstance().getUid();
         conversations = new ArrayList<>();
         recentConversationAdapter = new RecentConversationAdapter(conversations, this);
-        binding.activityMainRvRecentMessage.setAdapter(recentConversationAdapter);
+        // binding.activityMainRvRecentMessage.setAdapter(recentConversationAdapter);
+        mainFragment = new MessageFragment();
+        loadFragment(mainFragment);
     }
 
     private void eventHandling() {
         binding.activityMainIvSignOut.setOnClickListener(v -> signOut());
-        binding.activityMainBtAddMessage.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, UserActivity.class));
-        });
+        binding.activityMainBnvNavigation.setOnItemSelectedListener(onItemSelectedListener);
+    }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_main_fragment_container, fragment)
+                .commit();
     }
 
     private void signOut() {
@@ -175,5 +228,16 @@ public class MainActivity extends BaseActivity implements ChatListener {
         Intent intent = new Intent(MainActivity.this, ChatActivity.class);
         intent.putExtra(Constants.KEY_USER, user);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!(mainFragment instanceof MessageFragment)) {
+            binding.activityMainBnvNavigation.setSelectedItemId(R.id.menu_item_message);
+            mainFragment = new MessageFragment();
+            loadFragment(mainFragment);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -32,4 +32,7 @@
     <string name="no_user">Không có người dùng</string>
     <string name="type_a_message">Nhập tin nhắn</string>
     <string name="online">Online</string>
+    <string name="home">Home</string>
+    <string name="friends">Friends</string>
+    <string name="profile">Profile</string>
 </resources>
