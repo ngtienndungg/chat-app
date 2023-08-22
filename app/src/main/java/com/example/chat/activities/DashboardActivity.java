@@ -12,44 +12,34 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.chat.R;
-import com.example.chat.adapters.RecentConversationAdapter;
-import com.example.chat.databinding.ActivityMainBinding;
+import com.example.chat.databinding.ActivityDashboardBinding;
 import com.example.chat.fragments.FriendFragment;
-import com.example.chat.fragments.MessageFragment;
 import com.example.chat.fragments.ProfileFragment;
-import com.example.chat.listeners.ChatListener;
-import com.example.chat.models.Message;
-import com.example.chat.models.User;
+import com.example.chat.fragments.RecentConversationFragment;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
-public class MainActivity extends BaseActivity implements ChatListener {
+public class DashboardActivity extends BaseActivity {
 
     Fragment mainFragment;
     @SuppressLint("NonConstantResourceId")
     private final NavigationBarView.OnItemSelectedListener onItemSelectedListener = item -> {
         switch (item.getItemId()) {
             case R.id.menu_item_message:
-                if (!(mainFragment instanceof MessageFragment)) {
+                if (!(mainFragment instanceof RecentConversationFragment)) {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .remove(mainFragment);
-                    mainFragment = new MessageFragment();
+                    mainFragment = new RecentConversationFragment();
                     loadFragment(mainFragment);
                     return true;
                 } else {
@@ -80,79 +70,26 @@ public class MainActivity extends BaseActivity implements ChatListener {
         }
         return false;
     };
-    private ActivityMainBinding binding;
+    private ActivityDashboardBinding binding;
     private PreferenceManager preferenceManager;
-    private List<Message> conversations;
-    private RecentConversationAdapter recentConversationAdapter;
     private FirebaseFirestore database;
-    private String currentUserUid;
-    @SuppressLint("NotifyDataSetChanged")
-    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
-        if (error != null) {
-            return;
-        }
-        if (value != null) {
-            for (DocumentChange documentChange : value.getDocumentChanges()) {
-                if (documentChange.getType() == DocumentChange.Type.ADDED) {
-                    String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
-                    String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                    Message message = new Message();
-                    message.setSenderId(senderId);
-                    message.setReceiverId(receiverId);
-                    if (currentUserUid.equals(senderId)) {
-                        message.setConversationId(documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID));
-                        message.setConversationName(documentChange.getDocument().getString(Constants.KEY_RECEIVER_NAME));
-                        message.setConversationImage(documentChange.getDocument().getString(Constants.KEY_RECEIVER_IMAGE));
-                    } else {
-                        message.setConversationId(documentChange.getDocument().getString(Constants.KEY_SENDER_ID));
-                        message.setConversationName(documentChange.getDocument().getString(Constants.KEY_SENDER_NAME));
-                        message.setConversationImage(documentChange.getDocument().getString(Constants.KEY_SENDER_IMAGE));
-                    }
-                    message.setMessage(documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE));
-                    message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
-                    conversations.add(message);
-                } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
-                    for (int i = 0; i < conversations.size(); i++) {
-                        String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
-                        String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                        if (conversations.get(i).getSenderId().equals(senderId) && conversations.get(i).getReceiverId().equals(receiverId)) {
-                            conversations.get(i).setMessageContent(documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE));
-                            conversations.get(i).setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
-                            break;
-                        }
-                    }
-                }
-            }
-            conversations.sort(Comparator.comparing(Message::getDateObject));
-            recentConversationAdapter.notifyDataSetChanged();
-            // binding.activityMainRvRecentMessage.smoothScrollToPosition(0);
-            // binding.activityMainRvRecentMessage.setVisibility(View.VISIBLE);
-            // binding.activityChatPbLoading.setVisibility(View.GONE);
-        }
-    };
 
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         initiate();
         eventHandling();
         displayUserProfile();
         getToken();
-        listenConversation();
     }
 
     private void initiate() {
         preferenceManager = new PreferenceManager(this);
         database = FirebaseFirestore.getInstance();
-        currentUserUid = FirebaseAuth.getInstance().getUid();
-        conversations = new ArrayList<>();
-        recentConversationAdapter = new RecentConversationAdapter(conversations, this);
-        // binding.activityMainRvRecentMessage.setAdapter(recentConversationAdapter);
-        mainFragment = new MessageFragment();
+        mainFragment = new RecentConversationFragment();
         loadFragment(mainFragment);
     }
 
@@ -214,27 +151,11 @@ public class MainActivity extends BaseActivity implements ChatListener {
         }
     }
 
-    private void listenConversation() {
-        database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Constants.KEY_SENDER_ID, currentUserUid)
-                .addSnapshotListener(eventListener);
-        database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Constants.KEY_RECEIVER_ID, currentUserUid)
-                .addSnapshotListener(eventListener);
-    }
-
-    @Override
-    public void onRecentConversationClicked(User user) {
-        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-        intent.putExtra(Constants.KEY_USER, user);
-        startActivity(intent);
-    }
-
     @Override
     public void onBackPressed() {
-        if (!(mainFragment instanceof MessageFragment)) {
+        if (!(mainFragment instanceof RecentConversationFragment)) {
             binding.activityMainBnvNavigation.setSelectedItemId(R.id.menu_item_message);
-            mainFragment = new MessageFragment();
+            mainFragment = new RecentConversationFragment();
             loadFragment(mainFragment);
         } else {
             super.onBackPressed();
