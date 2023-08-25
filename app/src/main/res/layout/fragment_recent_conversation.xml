@@ -43,7 +43,7 @@
         android:id="@+id/fragment_recent_conversation_ivNewMessage"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="@dimen/_30sdp"
-        android:layout_marginHorizontal="@dimen/_16sdp"
+        android:layout_marginHorizontal="@dimen/_12sdp"
         android:background="@color/colorWhite"
         android:padding="@dimen/_6sdp"
         android:src="@drawable/ic_new"
