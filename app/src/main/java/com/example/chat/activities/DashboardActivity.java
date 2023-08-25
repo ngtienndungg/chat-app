@@ -1,12 +1,8 @@
 package com.example.chat.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -22,11 +18,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.HashMap;
 
 public class DashboardActivity extends BaseActivity {
 
@@ -94,7 +87,6 @@ public class DashboardActivity extends BaseActivity {
     }
 
     private void eventHandling() {
-        binding.activityMainIvSignOut.setOnClickListener(v -> signOut());
         binding.activityMainBnvNavigation.setOnItemSelectedListener(onItemSelectedListener);
     }
 
@@ -105,11 +97,10 @@ public class DashboardActivity extends BaseActivity {
                 .commit();
     }
 
-    private void signOut() {
+    /* private void signOut() {
         database = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            binding.activityMainIvSignOut.setVisibility(View.INVISIBLE);
             binding.activityMainPbSignOut.setVisibility(View.VISIBLE);
             DocumentReference documentReference = database.collection(Constants.KEY_COLLECTION_USERS).document(user.getUid());
             HashMap<String, Object> updates = new HashMap<>();
@@ -123,14 +114,11 @@ public class DashboardActivity extends BaseActivity {
                     })
                     .addOnFailureListener(e -> displayToast(getString(R.string.toast_something_wrong)));
         }
-    }
+    } */
 
     private void displayUserProfile() {
         preferenceManager = new PreferenceManager(this);
-        binding.activityMainTvName.setText(preferenceManager.getData(Constants.KEY_NAME));
         byte[] bytes = Base64.decode(preferenceManager.getData(Constants.KEY_IMAGE), Base64.DEFAULT);
-        Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        binding.activityMainRivProfile.setImageBitmap(image);
     }
 
     public void getToken() {

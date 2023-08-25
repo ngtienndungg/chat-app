@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_12sdp"
-        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="@drawable/background_search_input"
         android:orientation="horizontal"
         android:padding="@dimen/_6sdp"
@@ -23,13 +23,14 @@
             android:layout_height="@dimen/_22sdp"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/_8sdp"
-            android:src="@drawable/ic_search" />
+            android:src="@drawable/ic_search"
+            app:tint="@color/secondaryText"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="@dimen/_20sdp"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_8sdp"
             android:layout_marginEnd="@dimen/_30sdp"
             android:background="@null"
             android:hint="@string/search_message"
@@ -41,16 +42,16 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/fragment_recent_conversation_ivNewMessage"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_30sdp"
+        android:layout_width="@dimen/_32sdp"
+        android:layout_height="@dimen/_32sdp"
         android:layout_marginHorizontal="@dimen/_12sdp"
-        android:background="@color/colorWhite"
+        android:background="@drawable/background_search_input"
         android:padding="@dimen/_6sdp"
-        android:src="@drawable/ic_new"
+        android:src="@drawable/ic_write"
         app:layout_constraintBottom_toBottomOf="@id/fragment_recent_conversation_llSearch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/fragment_recent_conversation_llSearch"
-        app:tint="@color/colorBlack" />
+        app:tint="@color/secondaryText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_recent_conversation_rvRecentMessage"
@@ -59,7 +60,7 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:overScrollMode="never"
-        android:paddingVertical="@dimen/_20sdp"
+        android:paddingVertical="@dimen/_12sdp"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/fragment_recent_conversation_llSearch" />
