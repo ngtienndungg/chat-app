@@ -87,13 +87,13 @@ public class DashboardActivity extends BaseActivity {
     }
 
     private void eventHandling() {
-        binding.activityMainBnvNavigation.setOnItemSelectedListener(onItemSelectedListener);
+        binding.activityDashboardBnvNavigation.setOnItemSelectedListener(onItemSelectedListener);
     }
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_main_fragment_container, fragment)
+                .replace(R.id.activity_dashboard_fragment_container, fragment)
                 .commit();
     }
 
@@ -142,7 +142,7 @@ public class DashboardActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (!(mainFragment instanceof RecentConversationFragment)) {
-            binding.activityMainBnvNavigation.setSelectedItemId(R.id.menu_item_message);
+            binding.activityDashboardBnvNavigation.setSelectedItemId(R.id.menu_item_message);
             mainFragment = new RecentConversationFragment();
             loadFragment(mainFragment);
         } else {

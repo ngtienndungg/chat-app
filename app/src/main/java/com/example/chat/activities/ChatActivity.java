@@ -260,6 +260,8 @@ public class ChatActivity extends BaseActivity {
                             isOnline = true;
                         } else {
                             binding.activityChatIvOnline.setVisibility(View.INVISIBLE);
+                            binding.activityChatTvOnline.setText(R.string.offline);
+                            binding.activityChatTvOnline.setTextColor(getResources().getColor(R.color.colorOffline));
                             isOnline = false;
                         }
                         if (receivedUser.getImage() == null) {

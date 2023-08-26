@@ -33,8 +33,8 @@ public class RecentConversationFragment extends Fragment implements ChatListener
     private List<Message> conversations;
     private RecentConversationAdapter recentConversationAdapter;
     private String currentUserUid;
-    ProgressBar pbLoading;
-    RecyclerView rvRecentMessage;
+    private ProgressBar pbLoading;
+    private RecyclerView rvRecentMessage;
 
     @SuppressLint("NotifyDataSetChanged")
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
