@@ -94,6 +94,7 @@
             app:layout_constraintTop_toTopOf="@id/activity_chat_ivProfileImage" />
 
         <TextView
+            android:id="@+id/activity_chat_tvOnline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/_10sdp"

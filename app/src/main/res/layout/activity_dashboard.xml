@@ -27,7 +27,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/_8sdp"
             android:src="@drawable/ic_search"
-            app:tint="@color/secondaryText"/>
+            app:tint="@color/secondaryText" />
 
         <EditText
             android:layout_width="match_parent"
@@ -69,9 +69,9 @@
 
     <FrameLayout
         android:id="@+id/activity_dashboard_fragment_container"
-        android:layout_marginTop="@dimen/_4sdp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_4sdp"
         android:background="@color/primaryColor"
         app:layout_constraintBottom_toTopOf="@id/activity_dashboard_bnvNavigation"
         app:layout_constraintTop_toBottomOf="@id/activity_dashboard_llSearch" />
@@ -80,8 +80,8 @@
         android:id="@+id/activity_dashboard_bnvNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:labelVisibilityMode="unlabeled"
         android:background="@drawable/background_content_bottom"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_bottom_navigation" />
 

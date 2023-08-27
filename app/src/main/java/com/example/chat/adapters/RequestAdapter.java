@@ -10,39 +10,36 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chat.databinding.ItemContainerUserBinding;
-import com.example.chat.listeners.UserListener;
 import com.example.chat.models.User;
 
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
-    private final List<User> users;
-    private final UserListener userListener;
+public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
+    private final List<User> requestList;
 
-    public UserAdapter(List<User> users, UserListener userListener) {
-        this.users = users;
-        this.userListener = userListener;
+    public RequestAdapter(List<User> requestList) {
+        this.requestList = requestList;
     }
 
     @NonNull
     @Override
-    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemContainerUserBinding binding = ItemContainerUserBinding.inflate(
                 LayoutInflater.from(parent.getContext()),
                 parent,
                 false
         );
-        return new UserViewHolder(binding);
+        return new RequestAdapter.RequestViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.setUserData(users.get(position));
+    public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
+        holder.setRequest(requestList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return requestList.size();
     }
 
     private Bitmap getUserImage(String encodedImage) {
@@ -50,19 +47,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    public class UserViewHolder extends RecyclerView.ViewHolder {
+    public class RequestViewHolder extends RecyclerView.ViewHolder {
         private final ItemContainerUserBinding binding;
 
-        public UserViewHolder(ItemContainerUserBinding itemContainerUserBinding) {
+        public RequestViewHolder(@NonNull ItemContainerUserBinding itemContainerUserBinding) {
             super(itemContainerUserBinding.getRoot());
             binding = itemContainerUserBinding;
         }
 
-        private void setUserData(User user) {
+        public void setRequest(User user) {
             binding.itemContainerUserTvName.setText(user.getName());
             binding.itemContainerUserTvEmail.setText(user.getEmail());
             binding.itemContainerUserIvProfile.setImageBitmap(getUserImage(user.getImage()));
-            binding.getRoot().setOnClickListener(v -> userListener.onUserClicked(user));
         }
+
     }
 }

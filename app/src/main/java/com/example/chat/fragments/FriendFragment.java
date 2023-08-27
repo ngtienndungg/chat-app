@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chat.R;
 import com.example.chat.activities.ChatActivity;
-import com.example.chat.adapters.UserAdapter;
-import com.example.chat.listeners.UserListener;
+import com.example.chat.adapters.FriendAdapter;
+import com.example.chat.listeners.FriendListener;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class FriendFragment extends Fragment implements UserListener {
+public class FriendFragment extends Fragment implements FriendListener {
     private ProgressBar pbLoading;
     private RecyclerView rvFriends;
 
@@ -66,8 +66,8 @@ public class FriendFragment extends Fragment implements UserListener {
                             users.add(user);
                         }
                         if (users.size() > 0) {
-                            UserAdapter userAdapter = new UserAdapter(users, this);
-                            rvFriends.setAdapter(userAdapter);
+                            FriendAdapter friendAdapter = new FriendAdapter(users, this);
+                            rvFriends.setAdapter(friendAdapter);
                             rvFriends.setVisibility(View.VISIBLE);
                         }
                     }
