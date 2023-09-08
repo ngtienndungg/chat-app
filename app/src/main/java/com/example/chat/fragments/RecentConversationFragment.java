@@ -90,8 +90,8 @@ public class RecentConversationFragment extends Fragment implements ChatListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recent_conversation, container, false);
-        pbLoading = (ProgressBar) view.findViewById(R.id.fragment_recent_conversation_pbLoading);
-        rvRecentMessage = (RecyclerView) view.findViewById(R.id.fragment_recent_conversation_rvRecentMessage);
+        pbLoading = view.findViewById(R.id.fragment_recent_conversation_pbLoading);
+        rvRecentMessage = view.findViewById(R.id.fragment_recent_conversation_rvRecentMessage);
         initiate();
         listenConversation();
         return view;

@@ -13,20 +13,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.chat.R;
 import com.example.chat.activities.ChatActivity;
 import com.example.chat.adapters.FriendAdapter;
+import com.example.chat.adapters.RequestAdapter;
 import com.example.chat.listeners.FriendListener;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 public class FriendFragment extends Fragment implements FriendListener {
     private ProgressBar pbLoading;
     private RecyclerView rvFriends;
+    private RecyclerView rvRequest;
+    private FirebaseFirestore database;
+    private String currentUserId;
+    private List<User> requestList;
+    private List<User> friendList;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,39 +45,90 @@ public class FriendFragment extends Fragment implements FriendListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
-        pbLoading = (ProgressBar) view.findViewById(R.id.fragment_friend_pbLoading);
-        rvFriends = (RecyclerView) view.findViewById(R.id.fragment_friend_rvFriends);
-        getUserList();
-        return view;
-    }
+        pbLoading = view.findViewById(R.id.fragment_friend_pbLoading);
+        rvFriends = view.findViewById(R.id.fragment_friend_rvFriends);
+        rvRequest = view.findViewById(R.id.fragment_friend_rvRequests);
+        database = FirebaseFirestore.getInstance();
+        currentUserId = FirebaseAuth.getInstance().getUid();
 
-    private void getUserList() {
-        loading(true);
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-        database.collection(Constants.KEY_COLLECTION_USERS)
-                .get()
-                .addOnCompleteListener(task -> {
-                    loading(false);
-                    List<User> users = new ArrayList<>();
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        String currentUser = FirebaseAuth.getInstance().getUid();
-                        for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                            if (Objects.requireNonNull(currentUser).equals(queryDocumentSnapshot.getId())) {
-                                continue;
-                            }
-                            User user = new User();
-                            user.setName(queryDocumentSnapshot.getString(Constants.KEY_NAME));
-                            user.setEmail(queryDocumentSnapshot.getString(Constants.KEY_EMAIL));
-                            user.setImage(queryDocumentSnapshot.getString(Constants.KEY_IMAGE));
-                            user.setFcmToken(queryDocumentSnapshot.getString(Constants.KEY_FCM_TOKEN));
-                            user.setId(queryDocumentSnapshot.getId());
-                            users.add(user);
-                        }
-                        if (users.size() > 0) {
-                            FriendAdapter friendAdapter = new FriendAdapter(users, this);
+        getList((friendList, requestList) -> {
+            if (friendList.size() > 0) {
+                for (int i = 0; i < friendList.size(); i++) {
+                    int finalI = i;
+                    fillUpUserData(friendList.get(i), user -> {
+                        if (finalI == friendList.size()) {
+                            loading(false);
+                            FriendAdapter friendAdapter = new FriendAdapter(friendList, this);
                             rvFriends.setAdapter(friendAdapter);
                             rvFriends.setVisibility(View.VISIBLE);
                         }
+                    });
+                }
+            }
+            if (requestList.size() > 0) {
+                for (int i = 0; i < requestList.size(); i++) {
+                    int finalI = i;
+                    fillUpUserData(requestList.get(i), user -> {
+                        if (finalI == requestList.size()) {
+                            loading(false);
+                            RequestAdapter requestAdapter = new RequestAdapter(requestList);
+                            rvRequest.setAdapter(requestAdapter);
+                            rvRequest.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+            }
+        });
+        return view;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void getList(RequestAndFriendListCallback requestAndFriendListCallback) {
+        loading(true);
+        requestList = new ArrayList<>();
+        friendList = new ArrayList<>();
+        database.collection(Constants.KEY_COLLECTION_USERS).document(currentUserId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        Map<String, Object> friendData;
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if (documentSnapshot.exists()) {
+                            friendData = (HashMap<String, Object>) documentSnapshot.get(Constants.KEY_FRIENDS);
+                            if (friendData != null) {
+                                for (Map.Entry<String, Object> friend : friendData.entrySet()) {
+                                    User user = new User();
+                                    user.setId(friend.getKey());
+                                    if (friend.getValue().equals(0)) {
+                                        friendList.add(user);
+                                    } else {
+                                        requestList.add(user);
+                                    }
+                                }
+                            }
+                        }
+                        requestAndFriendListCallback.onCallback(friendList, requestList);
+                    }
+                });
+    }
+
+    private interface RequestAndFriendListCallback {
+        void onCallback(List<User> friendList, List<User> requestList);
+    }
+
+    private interface FillUpUserDataCallback {
+        void onCallback(User user);
+    }
+
+    private void fillUpUserData(User user, FillUpUserDataCallback fillUpUserDataCallback) {
+        database.collection(Constants.KEY_COLLECTION_USERS).document(user.getId()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        user.setId(document.getString(Constants.KEY_USER_ID));
+                        user.setName(document.getString(Constants.KEY_NAME));
+                        user.setImage(document.getString(Constants.KEY_IMAGE));
+                        user.setEmail(document.getString(Constants.KEY_EMAIL));
+                        fillUpUserDataCallback.onCallback(user);
                     }
                 });
     }
