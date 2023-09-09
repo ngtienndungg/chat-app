@@ -37,4 +37,5 @@
     <string name="profile">Profile</string>
     <string name="search_message">Search message...</string>
     <string name="offline">Offline</string>
+    <string name="friend_requests">Friend Requests</string>
 </resources>

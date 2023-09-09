@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +35,8 @@ public class FriendFragment extends Fragment implements FriendListener {
     private String currentUserId;
     private List<User> requestList;
     private List<User> friendList;
+    private TextView tvRequests;
+    private TextView tvFriends;
     private int finishCountRequest = 0;
     private int finishCountFriend = 0;
 
@@ -47,29 +50,23 @@ public class FriendFragment extends Fragment implements FriendListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
-        pbLoading = view.findViewById(R.id.fragment_friend_pbLoading);
-        rvFriends = view.findViewById(R.id.fragment_friend_rvFriends);
-        rvRequest = view.findViewById(R.id.fragment_friend_rvRequests);
-        database = FirebaseFirestore.getInstance();
-        currentUserId = FirebaseAuth.getInstance().getUid();
-
-        getList((friendList, requestList) -> {
-            if (requestList.size() > 0) {
-                for (int i = 0; i < requestList.size(); i++) {
-                    fillUpRequestUserData(requestList.get(i), requestList);
-                }
-            }
-            if (friendList.size()>0) {
-                for (int i = 0; i < friendList.size(); i++) {
-                    fillUpFriendUserData(friendList.get(i), friendList);
-                }
-            }
-        });
+        viewMapping(view);
+        getFriendAndRequestList();
         return view;
     }
 
     private interface RequestAndFriendListCallback {
         void onCallback(List<User> friendList, List<User> requestList);
+    }
+
+    private void viewMapping(View view) {
+        pbLoading = view.findViewById(R.id.fragment_friend_pbLoading);
+        rvFriends = view.findViewById(R.id.fragment_friend_rvFriends);
+        rvRequest = view.findViewById(R.id.fragment_friend_rvRequests);
+        tvFriends = view.findViewById(R.id.fragment_friend_tvFriends);
+        tvRequests = view.findViewById(R.id.fragment_friend_tvRequests);
+        database = FirebaseFirestore.getInstance();
+        currentUserId = FirebaseAuth.getInstance().getUid();
     }
 
     private void loading(boolean isLoading) {
@@ -85,6 +82,21 @@ public class FriendFragment extends Fragment implements FriendListener {
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra(Constants.KEY_USER, user);
         startActivity(intent);
+    }
+
+    private void getFriendAndRequestList() {
+        getList((friendList, requestList) -> {
+            if (requestList.size() > 0) {
+                for (int i = 0; i < requestList.size(); i++) {
+                    fillUpRequestUserData(requestList.get(i), requestList);
+                }
+            }
+            if (friendList.size() > 0) {
+                for (int i = 0; i < friendList.size(); i++) {
+                    fillUpFriendUserData(friendList.get(i), friendList);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -117,7 +129,6 @@ public class FriendFragment extends Fragment implements FriendListener {
     }
 
 
-
     private void fillUpRequestUserData(User user, List<User> list) {
         database.collection(Constants.KEY_COLLECTION_USERS).document(user.getId()).get()
                 .addOnCompleteListener(task -> {
@@ -128,11 +139,12 @@ public class FriendFragment extends Fragment implements FriendListener {
                         user.setImage(document.getString(Constants.KEY_IMAGE));
                         user.setEmail(document.getString(Constants.KEY_EMAIL));
                     }
-                    if (finishCountRequest++ == list.size()-1) {
+                    if (finishCountRequest++ == list.size() - 1) {
                         loading(false);
                         RequestAdapter requestAdapter = new RequestAdapter(requestList);
                         rvRequest.setAdapter(requestAdapter);
                         rvRequest.setVisibility(View.VISIBLE);
+                        tvRequests.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -147,11 +159,12 @@ public class FriendFragment extends Fragment implements FriendListener {
                         user.setImage(document.getString(Constants.KEY_IMAGE));
                         user.setEmail(document.getString(Constants.KEY_EMAIL));
                     }
-                    if (finishCountFriend++ == list.size()-1) {
+                    if (finishCountFriend++ == list.size() - 1) {
                         loading(false);
                         FriendAdapter friendAdapter = new FriendAdapter(list, this);
                         rvFriends.setAdapter(friendAdapter);
                         rvFriends.setVisibility(View.VISIBLE);
+                        tvFriends.setVisibility(View.VISIBLE);
                     }
                 });
     }
