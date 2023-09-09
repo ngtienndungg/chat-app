@@ -103,7 +103,7 @@ public class FriendFragment extends Fragment implements FriendListener {
                                 for (Map.Entry<String, Object> friend : friendData.entrySet()) {
                                     User user = new User();
                                     user.setId(friend.getKey());
-                                    if (friend.getValue().equals(0)) {
+                                    if (friend.getValue().equals(0L)) {
                                         friendList.add(user);
                                     } else {
                                         requestList.add(user);
