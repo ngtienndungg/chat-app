@@ -34,6 +34,8 @@ public class FriendFragment extends Fragment implements FriendListener {
     private String currentUserId;
     private List<User> requestList;
     private List<User> friendList;
+    private int finishCountRequest = 0;
+    private int finishCountFriend = 0;
 
 
     @Override
@@ -52,34 +54,37 @@ public class FriendFragment extends Fragment implements FriendListener {
         currentUserId = FirebaseAuth.getInstance().getUid();
 
         getList((friendList, requestList) -> {
-            if (friendList.size() > 0) {
-                for (int i = 0; i < friendList.size(); i++) {
-                    int finalI = i;
-                    fillUpUserData(friendList.get(i), user -> {
-                        if (finalI == friendList.size()) {
-                            loading(false);
-                            FriendAdapter friendAdapter = new FriendAdapter(friendList, this);
-                            rvFriends.setAdapter(friendAdapter);
-                            rvFriends.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-            }
             if (requestList.size() > 0) {
                 for (int i = 0; i < requestList.size(); i++) {
-                    int finalI = i;
-                    fillUpUserData(requestList.get(i), user -> {
-                        if (finalI == requestList.size()) {
-                            loading(false);
-                            RequestAdapter requestAdapter = new RequestAdapter(requestList);
-                            rvRequest.setAdapter(requestAdapter);
-                            rvRequest.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    fillUpRequestUserData(requestList.get(i), requestList);
+                }
+            }
+            if (friendList.size()>0) {
+                for (int i = 0; i < friendList.size(); i++) {
+                    fillUpFriendUserData(friendList.get(i), friendList);
                 }
             }
         });
         return view;
+    }
+
+    private interface RequestAndFriendListCallback {
+        void onCallback(List<User> friendList, List<User> requestList);
+    }
+
+    private void loading(boolean isLoading) {
+        if (isLoading) {
+            pbLoading.setVisibility(View.VISIBLE);
+        } else {
+            pbLoading.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onUserClicked(User user) {
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtra(Constants.KEY_USER, user);
+        startActivity(intent);
     }
 
     @SuppressWarnings("unchecked")
@@ -111,15 +116,9 @@ public class FriendFragment extends Fragment implements FriendListener {
                 });
     }
 
-    private interface RequestAndFriendListCallback {
-        void onCallback(List<User> friendList, List<User> requestList);
-    }
 
-    private interface FillUpUserDataCallback {
-        void onCallback(User user);
-    }
 
-    private void fillUpUserData(User user, FillUpUserDataCallback fillUpUserDataCallback) {
+    private void fillUpRequestUserData(User user, List<User> list) {
         database.collection(Constants.KEY_COLLECTION_USERS).document(user.getId()).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -128,23 +127,32 @@ public class FriendFragment extends Fragment implements FriendListener {
                         user.setName(document.getString(Constants.KEY_NAME));
                         user.setImage(document.getString(Constants.KEY_IMAGE));
                         user.setEmail(document.getString(Constants.KEY_EMAIL));
-                        fillUpUserDataCallback.onCallback(user);
+                    }
+                    if (finishCountRequest++ == list.size()-1) {
+                        loading(false);
+                        RequestAdapter requestAdapter = new RequestAdapter(requestList);
+                        rvRequest.setAdapter(requestAdapter);
+                        rvRequest.setVisibility(View.VISIBLE);
                     }
                 });
     }
 
-    private void loading(boolean isLoading) {
-        if (isLoading) {
-            pbLoading.setVisibility(View.VISIBLE);
-        } else {
-            pbLoading.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void onUserClicked(User user) {
-        Intent intent = new Intent(getActivity(), ChatActivity.class);
-        intent.putExtra(Constants.KEY_USER, user);
-        startActivity(intent);
+    private void fillUpFriendUserData(User user, List<User> list) {
+        database.collection(Constants.KEY_COLLECTION_USERS).document(user.getId()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        user.setId(document.getString(Constants.KEY_USER_ID));
+                        user.setName(document.getString(Constants.KEY_NAME));
+                        user.setImage(document.getString(Constants.KEY_IMAGE));
+                        user.setEmail(document.getString(Constants.KEY_EMAIL));
+                    }
+                    if (finishCountFriend++ == list.size()-1) {
+                        loading(false);
+                        FriendAdapter friendAdapter = new FriendAdapter(list, this);
+                        rvFriends.setAdapter(friendAdapter);
+                        rvFriends.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 }
