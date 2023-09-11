@@ -134,7 +134,6 @@ public class FriendFragment extends Fragment implements FriendListener {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         DocumentSnapshot document = task.getResult();
-                        user.setId(document.getString(Constants.KEY_USER_ID));
                         user.setName(document.getString(Constants.KEY_NAME));
                         user.setImage(document.getString(Constants.KEY_IMAGE));
                         user.setEmail(document.getString(Constants.KEY_EMAIL));
@@ -154,7 +153,6 @@ public class FriendFragment extends Fragment implements FriendListener {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         DocumentSnapshot document = task.getResult();
-                        user.setId(document.getString(Constants.KEY_USER_ID));
                         user.setName(document.getString(Constants.KEY_NAME));
                         user.setImage(document.getString(Constants.KEY_IMAGE));
                         user.setEmail(document.getString(Constants.KEY_EMAIL));
