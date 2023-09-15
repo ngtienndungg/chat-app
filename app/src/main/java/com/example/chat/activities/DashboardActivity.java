@@ -3,8 +3,11 @@ package com.example.chat.activities;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.chat.R;
@@ -23,46 +26,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 public class DashboardActivity extends BaseActivity {
 
-    Fragment mainFragment;
-    @SuppressLint("NonConstantResourceId")
-    private final NavigationBarView.OnItemSelectedListener onItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.menu_item_message:
-                if (!(mainFragment instanceof RecentConversationFragment)) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .remove(mainFragment);
-                    mainFragment = new RecentConversationFragment();
-                    loadFragment(mainFragment);
-                    return true;
-                } else {
-                    return false;
-                }
-            case R.id.menu_item_friends:
-                if (!(mainFragment instanceof FriendFragment)) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .remove(mainFragment);
-                    mainFragment = new FriendFragment();
-                    loadFragment(mainFragment);
-                    return true;
-                } else {
-                    return false;
-                }
-            case R.id.menu_item_profile:
-                if (!(mainFragment instanceof ProfileFragment)) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .remove(mainFragment);
-                    mainFragment = new ProfileFragment();
-                    loadFragment(mainFragment);
-                    return true;
-                } else {
-                    return false;
-                }
-        }
-        return false;
-    };
+    private Fragment mainFragment;
     private ActivityDashboardBinding binding;
     private PreferenceManager preferenceManager;
     private FirebaseFirestore database;
@@ -87,7 +51,58 @@ public class DashboardActivity extends BaseActivity {
     }
 
     private void eventHandling() {
-        binding.activityDashboardBnvNavigation.setOnItemSelectedListener(onItemSelectedListener);
+        binding.activityDashboardBnvNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_item_message:
+                        if (!(mainFragment instanceof RecentConversationFragment)) {
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .remove(mainFragment)
+                                    .commit();
+                            binding.activityDashboardRlAdd.setVisibility(View.VISIBLE);
+                            binding.activityDashboardIvNewMessage.setVisibility(View.VISIBLE);
+                            binding.activityDashboardIvAddFriend.setVisibility(View.GONE);
+                            mainFragment = new RecentConversationFragment();
+                            loadFragment(mainFragment);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    case R.id.menu_item_friends:
+                        if (!(mainFragment instanceof FriendFragment)) {
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .remove(mainFragment)
+                                    .commit();
+                            mainFragment = new FriendFragment();
+                            binding.activityDashboardRlAdd.setVisibility(View.VISIBLE);
+                            binding.activityDashboardIvAddFriend.setVisibility(View.VISIBLE);
+                            binding.activityDashboardIvNewMessage.setVisibility(View.GONE);
+                            loadFragment(mainFragment);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    case R.id.menu_item_profile:
+                        if (!(mainFragment instanceof ProfileFragment)) {
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .remove(mainFragment)
+                                    .commit();
+                            mainFragment = new ProfileFragment();
+                            binding.activityDashboardRlAdd.setVisibility(View.GONE);
+                            loadFragment(mainFragment);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                }
+                return false;
+            }
+        });
     }
 
     private void loadFragment(Fragment fragment) {
@@ -95,6 +110,7 @@ public class DashboardActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.activity_dashboard_fragment_container, fragment)
                 .commit();
+        binding.activityDashboardIvNewMessage.setVisibility(View.VISIBLE);
     }
 
     /* private void signOut() {

@@ -17,7 +17,7 @@
         android:background="@drawable/background_search_input"
         android:orientation="horizontal"
         android:padding="@dimen/_6sdp"
-        app:layout_constraintEnd_toStartOf="@id/activity_dashboard_ivNewMessage"
+        app:layout_constraintEnd_toStartOf="@id/activity_dashboard_rlAdd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -43,18 +43,36 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/activity_dashboard_ivNewMessage"
+    <RelativeLayout
+        android:id="@+id/activity_dashboard_rlAdd"
         android:layout_width="@dimen/_32sdp"
         android:layout_height="@dimen/_32sdp"
-        android:layout_marginHorizontal="@dimen/_12sdp"
-        android:background="@drawable/background_search_input"
-        android:padding="@dimen/_6sdp"
-        android:src="@drawable/ic_write"
         app:layout_constraintBottom_toBottomOf="@id/activity_dashboard_llSearch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/activity_dashboard_llSearch"
-        app:tint="@color/secondaryText" />
+        android:layout_marginHorizontal="@dimen/_12sdp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/activity_dashboard_ivNewMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_search_input"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/ic_write"
+            android:visibility="gone"
+            app:tint="@color/secondaryText" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/activity_dashboard_ivAddFriend"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_search_input"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/ic_add"
+            android:visibility="gone"
+            app:tint="@color/secondaryText" />
+
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/activity_dashboard_pbSignOut"
