@@ -16,9 +16,11 @@ import com.example.chat.activities.ChatActivity;
 import com.example.chat.adapters.FriendAdapter;
 import com.example.chat.adapters.RequestAdapter;
 import com.example.chat.listeners.FriendListener;
+import com.example.chat.listeners.RequestListener;
 import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -27,10 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FriendFragment extends Fragment implements FriendListener {
+public class FriendFragment extends Fragment implements FriendListener, RequestListener {
     private ProgressBar pbLoading;
+    private ProgressBar pbLoadingUser;
     private RecyclerView rvFriends;
     private RecyclerView rvRequest;
+    private FriendAdapter friendAdapter;
+    private RequestAdapter requestAdapter;
     private FirebaseFirestore database;
     private String currentUserId;
     private List<User> requestList;
@@ -39,7 +44,6 @@ public class FriendFragment extends Fragment implements FriendListener {
     private TextView tvFriends;
     private int finishCountRequest = 0;
     private int finishCountFriend = 0;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class FriendFragment extends Fragment implements FriendListener {
 
     private void viewMapping(View view) {
         pbLoading = view.findViewById(R.id.fragment_friend_pbLoading);
+        pbLoadingUser = view.findViewById(R.id.item_container_user_pbLoading);
         rvFriends = view.findViewById(R.id.fragment_friend_rvFriends);
         rvRequest = view.findViewById(R.id.fragment_friend_rvRequests);
         tvFriends = view.findViewById(R.id.fragment_friend_tvFriends);
@@ -84,17 +89,41 @@ public class FriendFragment extends Fragment implements FriendListener {
         startActivity(intent);
     }
 
+    @Override
+    public void onAcceptClick(User user, int position) {
+        Map<String, Object> friendData = new HashMap<>();
+        for (User requestUser : requestList) {
+            if (requestUser.getId().equals(user.getId())) {
+                friendData.put(requestUser.getId(), 0);
+            } else {
+                friendData.put(requestUser.getId(), 1);
+            }
+        }
+        for (User friendUser : friendList) {
+            friendData.put(friendUser.getId(), 0);
+        }
+        database.collection(Constants.KEY_COLLECTION_USERS).document(currentUserId)
+                .update(Constants.KEY_FRIENDS, friendData)
+                .addOnSuccessListener(unused -> {
+                    requestList.remove(position);
+                    friendList.add(user);
+                    friendAdapter.notifyItemInserted(friendList.size() - 1);
+                    requestAdapter.notifyItemRemoved(position);
+                });
+    }
+
+    @Override
+    public void onDenyClick(User user) {
+
+    }
+
     private void getFriendAndRequestList() {
         getList((friendList, requestList) -> {
-            if (requestList.size() > 0) {
-                for (int i = 0; i < requestList.size(); i++) {
-                    fillUpRequestUserData(requestList.get(i), requestList);
-                }
+            for (int i = 0; i < requestList.size(); i++) {
+                fillUpRequestUserData(requestList.get(i), requestList);
             }
-            if (friendList.size() > 0) {
-                for (int i = 0; i < friendList.size(); i++) {
-                    fillUpFriendUserData(friendList.get(i), friendList);
-                }
+            for (int i = 0; i < friendList.size(); i++) {
+                fillUpFriendUserData(friendList.get(i), friendList);
             }
         });
     }
@@ -104,28 +133,28 @@ public class FriendFragment extends Fragment implements FriendListener {
         loading(true);
         requestList = new ArrayList<>();
         friendList = new ArrayList<>();
-        database.collection(Constants.KEY_COLLECTION_USERS).document(currentUserId).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        Map<String, Object> friendData;
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        if (documentSnapshot.exists()) {
-                            friendData = (HashMap<String, Object>) documentSnapshot.get(Constants.KEY_FRIENDS);
-                            if (friendData != null) {
-                                for (Map.Entry<String, Object> friend : friendData.entrySet()) {
-                                    User user = new User();
-                                    user.setId(friend.getKey());
-                                    if (friend.getValue().equals(0L)) {
-                                        friendList.add(user);
-                                    } else {
-                                        requestList.add(user);
-                                    }
-                                }
+        DocumentReference documentReference = database.collection(Constants.KEY_COLLECTION_USERS).document(currentUserId);
+        documentReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                Map<String, Object> friendData;
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()) {
+                    friendData = (HashMap<String, Object>) documentSnapshot.get(Constants.KEY_FRIENDS);
+                    if (friendData != null) {
+                        for (Map.Entry<String, Object> friend : friendData.entrySet()) {
+                            User user = new User();
+                            user.setId(friend.getKey());
+                            if (friend.getValue().equals(0L)) {
+                                friendList.add(user);
+                            } else {
+                                requestList.add(user);
                             }
                         }
-                        requestAndFriendListCallback.onCallback(friendList, requestList);
                     }
-                });
+                }
+                requestAndFriendListCallback.onCallback(friendList, requestList);
+            }
+        });
     }
 
 
@@ -140,7 +169,7 @@ public class FriendFragment extends Fragment implements FriendListener {
                     }
                     if (finishCountRequest++ == list.size() - 1) {
                         loading(false);
-                        RequestAdapter requestAdapter = new RequestAdapter(requestList);
+                        requestAdapter = new RequestAdapter(requestList, this);
                         rvRequest.setAdapter(requestAdapter);
                         rvRequest.setVisibility(View.VISIBLE);
                         tvRequests.setVisibility(View.VISIBLE);
@@ -159,7 +188,7 @@ public class FriendFragment extends Fragment implements FriendListener {
                     }
                     if (finishCountFriend++ == list.size() - 1) {
                         loading(false);
-                        FriendAdapter friendAdapter = new FriendAdapter(list, this);
+                        friendAdapter = new FriendAdapter(list, this);
                         rvFriends.setAdapter(friendAdapter);
                         rvFriends.setVisibility(View.VISIBLE);
                         tvFriends.setVisibility(View.VISIBLE);
