@@ -64,9 +64,12 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
             binding.itemContainerUserTvEmail.setText(user.getEmail());
             binding.itemContainerUserIvProfile.setImageBitmap(getUserImage(user.getImage()));
             binding.itemContainerUserCtlResponse.setVisibility(View.VISIBLE);
-            binding.itemContainerUserIvAccept.setOnClickListener(v -> requestListener.onAcceptClick(user, getAdapterPosition()));
+            binding.itemContainerUserIvAccept.setOnClickListener(v -> {
+                binding.itemContainerUserPbLoadingAccept.setVisibility(View.VISIBLE);
+                requestListener.onAcceptClick(user, getAdapterPosition());
+            });
             binding.itemContainerUserIvDeny.setOnClickListener(v -> {
-                binding.itemContainerUserPbLoading.setVisibility(View.VISIBLE);
+                binding.itemContainerUserPbLoadingDeny.setVisibility(View.VISIBLE);
                 requestListener.onDenyClick(user);
             });
         }

@@ -76,8 +76,8 @@ public class RecentConversationFragment extends Fragment implements ChatListener
             conversations.sort(Comparator.comparing(Message::getDateObject));
             recentConversationAdapter.notifyDataSetChanged();
             rvRecentMessage.smoothScrollToPosition(0);
-            rvRecentMessage.setVisibility(View.VISIBLE);
             pbLoading.setVisibility(View.GONE);
+            rvRecentMessage.setVisibility(View.VISIBLE);
         }
     };
 
@@ -106,6 +106,7 @@ public class RecentConversationFragment extends Fragment implements ChatListener
     }
 
     private void listenConversation() {
+        pbLoading.setVisibility(View.VISIBLE);
         database.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
                 .whereEqualTo(Constants.KEY_SENDER_ID, currentUserUid)
                 .addSnapshotListener(eventListener);

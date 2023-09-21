@@ -19,7 +19,15 @@ public class Constants {
     public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
     public static final String KEY_SENDER_NAME = "senderName";
     public static final String KEY_RECEIVER_NAME = "receiverName";
-    public static final String KEY_FRIENDS = "friends";
+    public static final String KEY_COLLECTION_FRIENDS = "friends";
+    public static final String KEY_USER_FROM = "userFrom";
+    public static final String KEY_USER_TO = "userTo";
+    public static final String KEY_STATUS = "status";
+    public static final String VALUE_STATUS_FRIEND = "friend";
+    public static final String VALUE_STATUS_REQUEST_SENT = "requestSent";
+    public static final String VALUE_STATUS_REQUEST_RECEIVED = "requestReceived";
+    public static final String VALUE_STATUS_REQUEST_REJECTED = "requestRejected";
+    public static final String VALUE_STATUS_FRIEND_DELETED = "friendDeleted";
     public static final String KEY_SENDER_IMAGE = "senderImage";
     public static final String KEY_RECEIVER_IMAGE = "receiverImage";
     public static final String KEY_LAST_MESSAGE = "lastMessage";

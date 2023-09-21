@@ -47,10 +47,10 @@
         android:id="@+id/activity_dashboard_rlAdd"
         android:layout_width="@dimen/_32sdp"
         android:layout_height="@dimen/_32sdp"
+        android:layout_marginHorizontal="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@id/activity_dashboard_llSearch"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/activity_dashboard_llSearch"
-        android:layout_marginHorizontal="@dimen/_12sdp">
+        app:layout_constraintTop_toTopOf="@id/activity_dashboard_llSearch">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/activity_dashboard_ivNewMessage"

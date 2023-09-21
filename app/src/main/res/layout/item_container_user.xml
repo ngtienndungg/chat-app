@@ -60,9 +60,11 @@
         app:layout_constraintTop_toTopOf="@id/item_container_user_tvName">
 
         <ProgressBar
-            android:id="@+id/item_container_user_pbLoading"
+            android:id="@+id/item_container_user_pbLoadingAccept"
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
+            android:layout_marginEnd="@dimen/_6sdp"
+            android:padding="@dimen/_3sdp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/item_container_user_ivDeny"
@@ -80,6 +82,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/item_container_user_ivDeny"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <ProgressBar
+            android:id="@+id/item_container_user_pbLoadingDeny"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:padding="@dimen/_3sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/item_container_user_ivAccept"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
