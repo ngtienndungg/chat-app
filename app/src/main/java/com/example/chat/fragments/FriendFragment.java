@@ -83,6 +83,13 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
                             }
                         });
                     }
+                } else if (documentChange.getType() == DocumentChange.Type.REMOVED) {
+                    fetchUserData(documentChange.getDocument().getString(Constants.KEY_USER_TO), documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP), user -> {
+                        requestList.removeIf(request -> user.getId().equals(request.getId()));
+                        if (indexDocumentChange++ == finishIndexDocumentChange) {
+                            finishFetch();
+                        }
+                    });
                 }
             }
         }
@@ -208,7 +215,26 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
 
     @Override
     public void onDenyClick(User user) {
-
+        database.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_FROM, currentUserId)
+                .whereEqualTo(Constants.KEY_USER_TO, user.getId())
+                .get().addOnCompleteListener(task -> {
+                    task.getResult()
+                            .getDocuments()
+                            .get(0)
+                            .getReference()
+                            .delete();
+                });
+        database.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_FROM, user.getId())
+                .whereEqualTo(Constants.KEY_USER_TO, currentUserId)
+                .get().addOnCompleteListener(task -> {
+                    task.getResult()
+                            .getDocuments()
+                            .get(0)
+                            .getReference()
+                            .update(Constants.KEY_STATUS, Constants.VALUE_STATUS_REQUEST_REJECTED);
+                });
     }
 
     private interface DataCallback {
