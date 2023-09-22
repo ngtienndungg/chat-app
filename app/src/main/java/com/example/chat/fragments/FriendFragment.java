@@ -37,8 +37,6 @@ import java.util.Objects;
 public class FriendFragment extends Fragment implements FriendListener, RequestListener {
     private int indexDocumentChange = 0;
     private ProgressBar pbLoading;
-    private ProgressBar pbLoadingAccept;
-    private ProgressBar pbLoadingDeny;
     private RecyclerView rvFriends;
     private RecyclerView rvRequest;
     private FriendAdapter friendAdapter;
@@ -58,6 +56,7 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
             int finishIndexDocumentChange = value.getDocumentChanges().size() - 1;
             for (DocumentChange documentChange : value.getDocumentChanges()) {
                 if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                    // Friend update listener
                     if (Objects.equals(documentChange.getDocument().getString(Constants.KEY_STATUS), Constants.VALUE_STATUS_FRIEND)) {
                         fetchUserData(documentChange.getDocument().getString(Constants.KEY_USER_TO), documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP), user -> {
                             friendList.add(user);
@@ -65,7 +64,9 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
                                 finishFetch();
                             }
                         });
-                    } else if (Objects.equals(documentChange.getDocument().getString(Constants.KEY_STATUS), Constants.VALUE_STATUS_REQUEST_RECEIVED)) {
+                    }
+                    // Request update listener
+                    else if (Objects.equals(documentChange.getDocument().getString(Constants.KEY_STATUS), Constants.VALUE_STATUS_REQUEST_RECEIVED)) {
                         fetchUserData(documentChange.getDocument().getString(Constants.KEY_USER_TO), documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP), user -> {
                             requestList.add(user);
                             if (indexDocumentChange++ == finishIndexDocumentChange) {
@@ -74,6 +75,7 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
                         });
                     }
                 } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
+                    // Accept request listener
                     if (Objects.equals(documentChange.getDocument().getString(Constants.KEY_STATUS), Constants.VALUE_STATUS_FRIEND)) {
                         fetchUserData(documentChange.getDocument().getString(Constants.KEY_USER_TO), documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP), user -> {
                             friendList.add(user);
@@ -84,6 +86,7 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
                         });
                     }
                 } else if (documentChange.getType() == DocumentChange.Type.REMOVED) {
+                    // Reject request listener
                     fetchUserData(documentChange.getDocument().getString(Constants.KEY_USER_TO), documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP), user -> {
                         requestList.removeIf(request -> user.getId().equals(request.getId()));
                         if (indexDocumentChange++ == finishIndexDocumentChange) {
@@ -135,8 +138,6 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
 
     private void viewMapping(View view) {
         pbLoading = view.findViewById(R.id.fragment_friend_pbLoading);
-        pbLoadingAccept = view.findViewById(R.id.item_container_user_pbLoadingAccept);
-        pbLoadingDeny = view.findViewById(R.id.item_container_user_pbLoadingDeny);
         rvFriends = view.findViewById(R.id.fragment_friend_rvFriends);
         rvRequest = view.findViewById(R.id.fragment_friend_rvRequests);
         tvFriends = view.findViewById(R.id.fragment_friend_tvFriends);

@@ -20,9 +20,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.UserActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.NotificationActivity"
             android:exported="false" />
         <activity

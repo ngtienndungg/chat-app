@@ -16,4 +16,5 @@
     <color name="colorSentIcon">#595BD4</color>
     <color name="colorIcon">#C2BECD</color>
     <color name="colorOffline">#FFC107</color>
+    <color name="colorBackgroundInformation">#F7F7F7</color>
 </resources>

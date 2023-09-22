@@ -40,4 +40,6 @@
     <string name="search_message">Search message...</string>
     <string name="offline">Offline</string>
     <string name="friend_requests">Friend Requests</string>
+    <string name="scan_this_code">Scan this QR code to add friend with me</string>
+    <string name="add_friend">Add friend</string>
 </resources>
