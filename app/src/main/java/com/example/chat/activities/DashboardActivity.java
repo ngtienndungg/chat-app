@@ -1,13 +1,11 @@
 package com.example.chat.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.chat.R;
@@ -17,7 +15,6 @@ import com.example.chat.fragments.ProfileFragment;
 import com.example.chat.fragments.RecentConversationFragment;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -50,59 +47,51 @@ public class DashboardActivity extends BaseActivity {
         loadFragment(mainFragment);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void eventHandling() {
-        binding.activityDashboardBnvNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_item_message:
-                        if (!(mainFragment instanceof RecentConversationFragment)) {
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .remove(mainFragment)
-                                    .commit();
-                            binding.activityDashboardRlAdd.setVisibility(View.VISIBLE);
-                            binding.activityDashboardIvNewMessage.setVisibility(View.VISIBLE);
-                            binding.activityDashboardIvAddFriend.setVisibility(View.GONE);
-                            mainFragment = new RecentConversationFragment();
-                            loadFragment(mainFragment);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    case R.id.menu_item_friends:
-                        if (!(mainFragment instanceof FriendFragment)) {
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .remove(mainFragment)
-                                    .commit();
-                            mainFragment = new FriendFragment();
-                            binding.activityDashboardRlAdd.setVisibility(View.VISIBLE);
-                            binding.activityDashboardIvAddFriend.setVisibility(View.VISIBLE);
-                            binding.activityDashboardIvNewMessage.setVisibility(View.GONE);
-                            loadFragment(mainFragment);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    case R.id.menu_item_profile:
-                        if (!(mainFragment instanceof ProfileFragment)) {
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .remove(mainFragment)
-                                    .commit();
-                            mainFragment = new ProfileFragment();
-                            binding.activityDashboardRlAdd.setVisibility(View.GONE);
-                            loadFragment(mainFragment);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                }
-                return false;
+        binding.activityDashboardBnvNavigation.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_item_message:
+                    if (!(mainFragment instanceof RecentConversationFragment)) {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .remove(mainFragment)
+                                .commit();
+                        mainFragment = new RecentConversationFragment();
+                        loadFragment(mainFragment);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case R.id.menu_item_friends:
+                    if (!(mainFragment instanceof FriendFragment)) {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .remove(mainFragment)
+                                .commit();
+                        mainFragment = new FriendFragment();
+                        loadFragment(mainFragment);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case R.id.menu_item_profile:
+                    if (!(mainFragment instanceof ProfileFragment)) {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .remove(mainFragment)
+                                .commit();
+                        mainFragment = new ProfileFragment();
+                        loadFragment(mainFragment);
+                        return true;
+                    } else {
+                        return false;
+                    }
             }
+            return false;
         });
+
+        binding.activityDashboardRlAdd.setOnClickListener(v -> startActivity(new Intent(this, FindUserActivity.class)));
     }
 
     private void loadFragment(Fragment fragment) {
@@ -110,7 +99,6 @@ public class DashboardActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.activity_dashboard_fragment_container, fragment)
                 .commit();
-        binding.activityDashboardIvNewMessage.setVisibility(View.VISIBLE);
     }
 
     /* private void signOut() {

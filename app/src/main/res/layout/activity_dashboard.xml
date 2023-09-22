@@ -53,23 +53,12 @@
         app:layout_constraintTop_toTopOf="@id/activity_dashboard_llSearch">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/activity_dashboard_ivNewMessage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/background_search_input"
-            android:padding="@dimen/_6sdp"
-            android:src="@drawable/ic_write"
-            android:visibility="gone"
-            app:tint="@color/secondaryText" />
-
-        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/activity_dashboard_ivAddFriend"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/background_search_input"
             android:padding="@dimen/_6sdp"
             android:src="@drawable/ic_add"
-            android:visibility="gone"
             app:tint="@color/secondaryText" />
 
     </RelativeLayout>

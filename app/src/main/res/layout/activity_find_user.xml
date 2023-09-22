@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.FindUserFragment">
+    tools:context=".activities.FindUserActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_find_user_ctlHeader"
@@ -14,10 +14,10 @@
 
         <ImageView
             android:id="@+id/fragment_find_user_ivBack"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
             android:layout_marginStart="@dimen/_4sdp"
-            android:padding="@dimen/_5sdp"
+            android:padding="@dimen/_6sdp"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -27,23 +27,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/_8sdp"
             android:layout_marginBottom="@dimen/_1sdp"
             android:text="@string/add_friend"
-            android:textSize="@dimen/_15sdp"
+            android:textSize="@dimen/_14sdp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/fragment_find_user_ivBack"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:background="@color/colorBlack"
-        app:layout_constraintBottom_toTopOf="@id/fragment_find_user_rlBorderUserInformation"
-        app:layout_constraintTop_toBottomOf="@id/fragment_find_user_ctlHeader" />
 
     <RelativeLayout
         android:id="@+id/fragment_find_user_rlBorderUserInformation"
@@ -57,7 +50,10 @@
             android:layout_width="@dimen/_180sdp"
             android:layout_height="@dimen/_180sdp"
             android:layout_centerInParent="true"
-            android:layout_margin="@dimen/_30sdp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginEnd="@dimen/_30sdp"
+            android:layout_marginBottom="@dimen/_30sdp"
             android:background="@drawable/background_current_user_information"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -67,29 +63,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="@dimen/_14sdp"
+                android:layout_marginTop="@dimen/_8sdp"
                 android:gravity="center"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/_14sdp"
                 android:textStyle="bold" />
 
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/fragment_find_user_ivImage"
                 android:layout_width="@dimen/_100sdp"
                 android:layout_height="@dimen/_100sdp"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="@dimen/_24sdp"
+                app:riv_oval="true"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
                 android:gravity="center"
                 android:text="@string/scan_this_code"
                 android:textColor="@color/colorWhite"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="@dimen/_9sdp"
+                tools:ignore="TextSizeCheck" />
 
         </RelativeLayout>
 
@@ -99,10 +96,11 @@
         android:id="@+id/fragment_find_user_tilEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:hint="@string/email"
+        app:boxStrokeColor="#527299"
         app:endIconMode="clear_text"
         app:helperTextEnabled="true"
         app:layout_constraintEnd_toStartOf="@id/fragment_find_user_flNext"
@@ -119,11 +117,12 @@
 
     <FrameLayout
         android:id="@+id/fragment_find_user_flNext"
-        android:layout_width="@dimen/_32sdp"
-        android:layout_height="@dimen/_32sdp"
-        android:layout_marginEnd="@dimen/_14sdp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
         android:background="@drawable/background_chat_input"
-        android:backgroundTint="#0069FF"
+        android:backgroundTint="#527299"
         app:layout_constraintBottom_toBottomOf="@id/fragment_find_user_tilEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/fragment_find_user_tilEmail">
