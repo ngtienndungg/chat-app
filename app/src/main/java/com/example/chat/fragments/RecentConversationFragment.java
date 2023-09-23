@@ -25,7 +25,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class RecentConversationFragment extends Fragment implements ChatListener {
@@ -73,7 +72,7 @@ public class RecentConversationFragment extends Fragment implements ChatListener
                     }
                 }
             }
-            conversations.sort(Comparator.comparing(Message::getDateObject));
+            conversations.sort((o1, o2) -> o2.getDateObject().compareTo(o1.getDateObject()));
             recentConversationAdapter.notifyDataSetChanged();
             rvRecentMessage.smoothScrollToPosition(0);
             pbLoading.setVisibility(View.GONE);
