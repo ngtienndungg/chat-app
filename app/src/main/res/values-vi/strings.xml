@@ -42,4 +42,5 @@
     <string name="scan_this_code">Scan this QR code to add friend with me</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="please_type_a_valid_email">Please type a valid email</string>
+    <string name="account_information">Account information</string>
 </resources>

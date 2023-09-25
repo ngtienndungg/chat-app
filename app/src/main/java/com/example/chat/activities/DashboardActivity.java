@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import com.example.chat.R;
 import com.example.chat.databinding.ActivityDashboardBinding;
 import com.example.chat.fragments.FriendFragment;
-import com.example.chat.fragments.ProfileFragment;
+import com.example.chat.fragments.SelfFragment;
 import com.example.chat.fragments.RecentConversationFragment;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
@@ -76,12 +76,12 @@ public class DashboardActivity extends BaseActivity {
                         return false;
                     }
                 case R.id.menu_item_profile:
-                    if (!(mainFragment instanceof ProfileFragment)) {
+                    if (!(mainFragment instanceof SelfFragment)) {
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .remove(mainFragment)
                                 .commit();
-                        mainFragment = new ProfileFragment();
+                        mainFragment = new SelfFragment();
                         loadFragment(mainFragment);
                         return true;
                     } else {
