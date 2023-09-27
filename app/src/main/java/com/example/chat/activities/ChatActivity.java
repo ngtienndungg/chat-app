@@ -166,7 +166,7 @@ public class ChatActivity extends BaseActivity {
         message.put(Constants.KEY_RECEIVER_ID, receivedUser.getId());
         message.put(Constants.KEY_MESSAGE, binding.activityChatEtMessage.getText().toString());
         message.put(Constants.KEY_TIMESTAMP, new Date());
-        database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
+        database.collection(Constants.KEY_COLLECTION_MESSAGES).add(message);
         if (conversationId != null) {
             updateConversation(binding.activityChatEtMessage.getText().toString());
         } else {
@@ -209,11 +209,11 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void listenMessages() {
-        database.collection(Constants.KEY_COLLECTION_CHAT)
+        database.collection(Constants.KEY_COLLECTION_MESSAGES)
                 .whereEqualTo(Constants.KEY_SENDER_ID, currentUserId)
                 .whereEqualTo(Constants.KEY_RECEIVER_ID, receivedUser.getId())
                 .addSnapshotListener(eventListener);
-        database.collection(Constants.KEY_COLLECTION_CHAT)
+        database.collection(Constants.KEY_COLLECTION_MESSAGES)
                 .whereEqualTo(Constants.KEY_SENDER_ID, receivedUser.getId())
                 .whereEqualTo(Constants.KEY_RECEIVER_ID, currentUserId)
                 .addSnapshotListener(eventListener);

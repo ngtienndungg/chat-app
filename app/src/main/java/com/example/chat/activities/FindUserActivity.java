@@ -1,14 +1,11 @@
 package com.example.chat.activities;
 
-import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Patterns;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,13 +13,14 @@ import com.example.chat.R;
 import com.example.chat.databinding.ActivityFindUserBinding;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
 public class FindUserActivity extends AppCompatActivity {
     private ActivityFindUserBinding binding;
-    private Dialog userDialog;
+    private String currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +35,7 @@ public class FindUserActivity extends AppCompatActivity {
         PreferenceManager preferenceManager = new PreferenceManager(this);
         binding.fragmentFindUserTvName.setText(preferenceManager.getData(Constants.KEY_NAME));
         binding.fragmentFindUserIvImage.setImageBitmap(getUserImage(preferenceManager.getData(Constants.KEY_IMAGE)));
+        currentUserId = FirebaseAuth.getInstance().getUid();
     }
 
     private void eventHandling() {
@@ -49,32 +48,36 @@ public class FindUserActivity extends AppCompatActivity {
             }
         });
         binding.fragmentFindUserIvNext.setOnClickListener(v -> {
+            binding.fragmentFindUserCtlSearchedUser.setVisibility(View.GONE);
             if (!Objects.requireNonNull(binding.fragmentFindUserEtEmail.getText()).toString().trim().isEmpty()) {
                 FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_USERS)
                         .whereEqualTo(Constants.KEY_EMAIL, binding.fragmentFindUserEtEmail.getText().toString().trim())
                         .get()
                         .addOnCompleteListener(task -> {
                             if (task.getResult().getDocuments().get(0) != null) {
-                                String name = task.getResult().getDocuments().get(0).getString(Constants.KEY_NAME);
-                                String email = task.getResult().getDocuments().get(0).getString(Constants.KEY_EMAIL);
-                                String image = task.getResult().getDocuments().get(0).getString(Constants.KEY_IMAGE);
-                                userDialog = new Dialog(FindUserActivity.this);
-                                userDialog.setContentView(R.layout.dialog_profile);
-                                userDialog.setCanceledOnTouchOutside(true);
-                                Objects.requireNonNull(userDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-                                Objects.requireNonNull(userDialog.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                userDialog.getWindow().getAttributes().windowAnimations = R.style.animation;
-                                userDialog.findViewById(R.id.dialog_ivQuit).setOnClickListener(v1 -> {
-                                    userDialog.dismiss();
-                                    userDialog = null;
-                                });
-                                ImageView ivProfile = userDialog.findViewById(R.id.dialog_ivProfile);
-                                ivProfile.setImageBitmap(getUserImage(image));
-                                TextView tvName = userDialog.findViewById(R.id.dialog_tvName);
-                                tvName.setText(name);
-                                TextView tvEmail = userDialog.findViewById(R.id.dialog_tvEmail);
-                                tvEmail.setText(email);
-                                userDialog.show();
+                                String userToUid = task.getResult().getDocuments().get(0).getId();
+                                binding.fragmentFindUserIvSearchedProfileUser.setImageBitmap(getUserImage(task.getResult().getDocuments().get(0).getString(Constants.KEY_IMAGE)));
+                                binding.fragmentFindUserTvSearchedNameUser.setText(task.getResult().getDocuments().get(0).getString(Constants.KEY_NAME));
+                                if (task.getResult().getDocuments().get(0).getId().equals(currentUserId)) {
+                                    binding.fragmentFindUserTvRelationship.setText(getResources().getString(R.string.relationship_yourself));
+                                    binding.fragmentFindUserCtlSearchedUser.setVisibility(View.VISIBLE);
+                                } else {
+                                    FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_FRIENDS)
+                                            .whereEqualTo(Constants.KEY_USER_FROM, currentUserId)
+                                            .whereEqualTo(Constants.KEY_USER_TO, userToUid)
+                                            .get()
+                                            .addOnCompleteListener(relationshipTask -> {
+                                                if (relationshipTask.getResult().getDocuments().size() == 0) {
+                                                    binding.fragmentFindUserTvRelationship.setText(getResources().getString(R.string.relationship_stranger));
+                                                } else {
+                                                    String status = relationshipTask.getResult().getDocuments().get(0).getString(Constants.KEY_STATUS);
+                                                    if (Objects.equals(status, Constants.VALUE_STATUS_FRIEND)) {
+                                                        binding.fragmentFindUserTvRelationship.setText(getResources().getString(R.string.relationship_friend));
+                                                    }
+                                                }
+                                                binding.fragmentFindUserCtlSearchedUser.setVisibility(View.VISIBLE);
+                                            });
+                                }
                             }
                         });
             }

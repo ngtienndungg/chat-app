@@ -3,10 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/background_search_input"
-    android:backgroundTint="@color/primaryColor"
-    android:layout_marginHorizontal="@dimen/_16sdp">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/dialog_ivQuit"
@@ -61,21 +58,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_ivProfile" />
-
-    <TextView
-        android:id="@+id/dialog_tvEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_2sdp"
-        android:textSize="@dimen/_12sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_tvName" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_8sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_tvEmail" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

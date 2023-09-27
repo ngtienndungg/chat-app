@@ -43,4 +43,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="please_type_a_valid_email">Please type a valid email</string>
     <string name="account_information">Account information</string>
+    <string name="relationship_friend">Friend</string>
+    <string name="relationship_stranger">Stranger</string>
+    <string name="relationship_yourself">You</string>
 </resources>
