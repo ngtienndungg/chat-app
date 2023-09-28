@@ -69,10 +69,12 @@ public class FindUserActivity extends AppCompatActivity {
                                             .addOnCompleteListener(relationshipTask -> {
                                                 if (relationshipTask.getResult().getDocuments().size() == 0) {
                                                     binding.fragmentFindUserTvRelationship.setText(getResources().getString(R.string.relationship_stranger));
+                                                    binding.fragmentFindUserTvAction.setText(getResources().getString(R.string.action_add_friend));
                                                 } else {
                                                     String status = relationshipTask.getResult().getDocuments().get(0).getString(Constants.KEY_STATUS);
                                                     if (Objects.equals(status, Constants.VALUE_STATUS_FRIEND)) {
                                                         binding.fragmentFindUserTvRelationship.setText(getResources().getString(R.string.relationship_friend));
+                                                        binding.fragmentFindUserTvAction.setText(getResources().getString(R.string.action_message));
                                                     }
                                                 }
                                                 binding.fragmentFindUserCtlSearchedUser.setVisibility(View.VISIBLE);

@@ -144,8 +144,8 @@
         android:layout_marginVertical="@dimen/_18sdp"
         android:layout_marginStart="@dimen/_12sdp"
         android:layout_marginEnd="@dimen/_16sdp"
-        android:visibility="gone"
         android:background="@drawable/background_searched_user"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/fragment_find_user_tilEmail">
 
         <com.makeramen.roundedimageview.RoundedImageView
@@ -171,16 +171,31 @@
             android:id="@+id/fragment_find_user_tvRelationship"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_6sdp"
+            android:layout_marginTop="@dimen/_2sdp"
             android:background="@drawable/background_relationship"
             android:paddingHorizontal="@dimen/_6sdp"
             android:paddingVertical="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_2sdp"
             android:textSize="@dimen/_9sdp"
-            android:layout_marginStart="@dimen/_6sdp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/fragment_find_user_tvSearchedNameUser"
             app:layout_constraintStart_toEndOf="@id/fragment_find_user_tvSearchedNameUser"
             app:layout_constraintTop_toTopOf="@id/fragment_find_user_tvSearchedNameUser" />
+
+        <TextView
+            android:id="@+id/fragment_find_user_tvAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/background_relationship"
+            android:backgroundTint="@color/colorSearchUser"
+            android:padding="@dimen/_6sdp"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_12sdp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
