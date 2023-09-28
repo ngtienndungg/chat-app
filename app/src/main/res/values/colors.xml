@@ -18,4 +18,5 @@
     <color name="colorOffline">#FFC107</color>
     <color name="colorBackgroundInformation">#F7F7F7</color>
     <color name="colorSearchUser">#7D85C2</color>
+    <color name="colorAccept">#00DAB1</color>
 </resources>

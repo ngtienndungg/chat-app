@@ -48,4 +48,6 @@
     <string name="relationship_yourself">You</string>
     <string name="action_message">Message</string>
     <string name="action_add_friend">Add friend</string>
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
 </resources>
