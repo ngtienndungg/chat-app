@@ -50,4 +50,6 @@
     <string name="action_add_friend">Add friend</string>
     <string name="reject">Reject</string>
     <string name="accept">Accept</string>
+    <string name="unsent">Unsent</string>
+    <string name="no_user_match">No users match your result</string>
 </resources>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/menu_item_message"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_message"
         tools:ignore="MenuTitle" />
 
     <item
