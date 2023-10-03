@@ -195,7 +195,8 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
         database.collection(Constants.KEY_COLLECTION_FRIENDS)
                 .whereEqualTo(Constants.KEY_USER_FROM, currentUserId)
                 .whereEqualTo(Constants.KEY_USER_TO, user.getId())
-                .get().addOnCompleteListener(task -> {
+                .get()
+                .addOnCompleteListener(task -> {
                     task.getResult()
                             .getDocuments()
                             .get(0)
@@ -205,7 +206,8 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
         database.collection(Constants.KEY_COLLECTION_FRIENDS)
                 .whereEqualTo(Constants.KEY_USER_FROM, user.getId())
                 .whereEqualTo(Constants.KEY_USER_TO, currentUserId)
-                .get().addOnCompleteListener(task -> {
+                .get()
+                .addOnCompleteListener(task -> {
                     task.getResult()
                             .getDocuments()
                             .get(0)

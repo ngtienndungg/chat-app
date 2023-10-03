@@ -1,5 +1,6 @@
 package com.example.chat.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,19 +12,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chat.R;
 import com.example.chat.databinding.ActivityFindUserBinding;
+import com.example.chat.models.User;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class FindUserActivity extends AppCompatActivity {
+    private User searchedUser;
     private ActivityFindUserBinding binding;
-    private String currentUserId;
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
         if (error != null) {
             return;
@@ -54,6 +60,8 @@ public class FindUserActivity extends AppCompatActivity {
             }
         }
     };
+    private String currentUserId;
+    private FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +77,8 @@ public class FindUserActivity extends AppCompatActivity {
         binding.fragmentFindUserTvName.setText(preferenceManager.getData(Constants.KEY_NAME));
         binding.fragmentFindUserIvImage.setImageBitmap(getUserImage(preferenceManager.getData(Constants.KEY_IMAGE)));
         currentUserId = FirebaseAuth.getInstance().getUid();
+        database = FirebaseFirestore.getInstance();
+        searchedUser = new User();
     }
 
     private void eventHandling() {
@@ -82,24 +92,26 @@ public class FindUserActivity extends AppCompatActivity {
                 binding.fragmentFindUserTilEmail.setHelperTextEnabled(false);
                 binding.fragmentFindUserPbLoading.setVisibility(View.VISIBLE);
                 binding.fragmentFindUserCtlSearchedUser.setVisibility(View.GONE);
-                FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_USERS)
+                database.collection(Constants.KEY_COLLECTION_USERS)
                         .whereEqualTo(Constants.KEY_EMAIL, binding.fragmentFindUserEtEmail.getText().toString().trim())
                         .get()
                         .addOnCompleteListener(task -> {
                             if (task.getResult().getDocuments().size() != 0) {
                                 if (task.getResult().getDocuments().get(0) != null) {
-                                    String userToUid = task.getResult().getDocuments().get(0).getId();
-                                    binding.fragmentFindUserIvSearchedProfileUser.setImageBitmap(getUserImage(task.getResult().getDocuments().get(0).getString(Constants.KEY_IMAGE)));
-                                    binding.fragmentFindUserTvSearchedNameUser.setText(task.getResult().getDocuments().get(0).getString(Constants.KEY_NAME));
+                                    searchedUser.setId(task.getResult().getDocuments().get(0).getId());
+                                    searchedUser.setImage(task.getResult().getDocuments().get(0).getString(Constants.KEY_IMAGE));
+                                    searchedUser.setName(task.getResult().getDocuments().get(0).getString(Constants.KEY_NAME));
+                                    binding.fragmentFindUserIvSearchedProfileUser.setImageBitmap(getUserImage(searchedUser.getImage()));
+                                    binding.fragmentFindUserTvSearchedNameUser.setText(searchedUser.getName());
                                     // Yourself
                                     if (task.getResult().getDocuments().get(0).getId().equals(currentUserId)) {
                                         actionDisplay(false, false, false, false);
                                     }
                                     // Other
                                     else {
-                                        FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_FRIENDS)
+                                        database.collection(Constants.KEY_COLLECTION_FRIENDS)
                                                 .whereEqualTo(Constants.KEY_USER_FROM, currentUserId)
-                                                .whereEqualTo(Constants.KEY_USER_TO, userToUid)
+                                                .whereEqualTo(Constants.KEY_USER_TO, searchedUser.getId())
                                                 .addSnapshotListener(eventListener);
                                     }
                                 }
@@ -111,6 +123,49 @@ public class FindUserActivity extends AppCompatActivity {
                         });
             }
         });
+        actionEventHandling();
+    }
+
+    private void actionEventHandling() {
+        binding.fragmentFindUserCtlAddFriendAction.setOnClickListener(v -> {
+            Date currentTime = new Date();
+            Map<String, Object> requestSentData = new HashMap<>();
+            requestSentData.put(Constants.KEY_USER_FROM, currentUserId);
+            requestSentData.put(Constants.KEY_USER_TO, searchedUser.getId());
+            requestSentData.put(Constants.KEY_STATUS, Constants.VALUE_STATUS_REQUEST_SENT);
+            requestSentData.put(Constants.KEY_TIMESTAMP, currentTime);
+            Map<String, Object> requestReceivedData = new HashMap<>();
+            requestReceivedData.put(Constants.KEY_USER_FROM, searchedUser.getId());
+            requestReceivedData.put(Constants.KEY_USER_TO, currentUserId);
+            requestReceivedData.put(Constants.KEY_STATUS, Constants.VALUE_STATUS_REQUEST_RECEIVED);
+            requestReceivedData.put(Constants.KEY_TIMESTAMP, currentTime);
+            database.collection(Constants.KEY_COLLECTION_FRIENDS).document().set(requestSentData);
+            database.collection(Constants.KEY_COLLECTION_FRIENDS).document().set(requestReceivedData);
+        });
+        binding.fragmentFindUserCtlUnsentAction.setOnClickListener(v -> {
+            getUpdateTask(currentUserId, searchedUser.getId()).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().delete());
+            getUpdateTask(searchedUser.getId(), currentUserId).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().delete());
+        });
+        binding.fragmentFindUserCtlRejectAction.setOnClickListener(v -> {
+            getUpdateTask(currentUserId, searchedUser.getId()).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().delete());
+            getUpdateTask(searchedUser.getId(), currentUserId).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().delete());
+        });
+        binding.fragmentFindUserCtlAcceptAction.setOnClickListener(v -> {
+            getUpdateTask(currentUserId, searchedUser.getId()).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().update(Constants.KEY_STATUS, Constants.VALUE_STATUS_FRIEND));
+            getUpdateTask(searchedUser.getId(), currentUserId).addOnCompleteListener(task -> task.getResult().getDocuments().get(0).getReference().update(Constants.KEY_STATUS, Constants.VALUE_STATUS_FRIEND));
+        });
+        binding.fragmentFindUserCtlMessageAction.setOnClickListener(v -> {
+            Intent intent = new Intent(FindUserActivity.this, ChatActivity.class);
+            intent.putExtra(Constants.KEY_USER, searchedUser);
+            startActivity(intent);
+        });
+    }
+
+    private Task<QuerySnapshot> getUpdateTask(String userFrom, String userTo) {
+        return database.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_FROM, userFrom)
+                .whereEqualTo(Constants.KEY_USER_TO, userTo)
+                .get();
     }
 
     private Bitmap getUserImage(String encodedImage) {
