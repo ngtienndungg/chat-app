@@ -10,6 +10,8 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.example.chat.R;
@@ -29,6 +31,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +59,12 @@ public class ChatActivity extends BaseActivity {
     private List<Message> messages;
     private String currentUserId;
     private String conversationId;
+    private boolean isOnline;
+    ActivityResultLauncher<String> getImage = registerForActivityResult(new ActivityResultContracts.GetContent(),
+            uri -> {
+                Long time = System.currentTimeMillis();
+                FirebaseStorage.getInstance().getReference("images/" + currentUserId + "/" + time).putFile(uri);
+            });
     private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
         if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
             DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
@@ -94,7 +103,6 @@ public class ChatActivity extends BaseActivity {
             checkConversation();
         }
     };
-    private boolean isOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +139,9 @@ public class ChatActivity extends BaseActivity {
             public void afterTextChanged(Editable s) {
 
             }
+        });
+        binding.activityChatIvSelectImage.setOnClickListener(v -> {
+            getImage.launch("image/*");
         });
     }
 

@@ -168,6 +168,18 @@
 
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/activity_chat_ivSelectImage"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:src="@drawable/ic_image"
+        app:layout_constraintBottom_toBottomOf="@id/activity_chat_etMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/activity_chat_etMessage"
+        app:tint="@color/colorSentIcon"
+        tools:ignore="ContentDescription" />
+
     <EditText
         android:id="@+id/activity_chat_etMessage"
         android:layout_width="0dp"
@@ -184,7 +196,7 @@
         android:textColorHint="@color/secondaryText"
         app:layout_constraintBottom_toBottomOf="@id/activity_chat_flSend"
         app:layout_constraintEnd_toStartOf="@id/activity_chat_flSend"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/activity_chat_ivSelectImage"
         app:layout_constraintTop_toTopOf="@id/activity_chat_flSend" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,6 +73,10 @@ public class FriendFragment extends Fragment implements FriendListener, RequestL
                                 finishFetch();
                             }
                         });
+                    } else {
+                        if (indexDocumentChange++ == finishIndexDocumentChange) {
+                            finishFetch();
+                        }
                     }
                 } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
                     // Accept request listener
