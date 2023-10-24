@@ -62,8 +62,13 @@ public class ChatActivity extends BaseActivity {
     private boolean isOnline;
     ActivityResultLauncher<String> getImage = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
-                Long time = System.currentTimeMillis();
-                FirebaseStorage.getInstance().getReference("images/" + currentUserId + "/" + time).putFile(uri);
+                if (uri != null) {
+                    Long time = System.currentTimeMillis();
+                    String imagePath = "images/" + currentUserId + "/" + time;
+                    FirebaseStorage.getInstance().getReference(imagePath).putFile(uri).addOnCompleteListener(task -> {
+                        sendMessage(imagePath);
+                    });
+                }
             });
     private final OnCompleteListener<QuerySnapshot> conversationOnCompleteListener = task -> {
         if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
@@ -83,7 +88,11 @@ public class ChatActivity extends BaseActivity {
                     Message message = new Message();
                     message.setSenderId(documentChange.getDocument().getString(Constants.KEY_SENDER_ID));
                     message.setReceiverId(documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID));
-                    message.setMessage(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
+                    if (documentChange.getDocument().getString(Constants.KEY_MESSAGE) != null) {
+                        message.setMessage(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
+                    } else {
+                        message.setMessageImage(documentChange.getDocument().getString(Constants.KEY_IMAGE_MESSAGE));
+                    }
                     message.setDateTime(formatDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP)));
                     message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     messages.add(message);
@@ -117,7 +126,7 @@ public class ChatActivity extends BaseActivity {
 
     private void eventHandling() {
         binding.activityChatIvBack.setOnClickListener(v -> onBackPressed());
-        binding.activityChatFlSend.setOnClickListener(v -> sendMessage());
+        binding.activityChatFlSend.setOnClickListener(v -> sendMessage(null));
         binding.activityChatEtMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -171,15 +180,23 @@ public class ChatActivity extends BaseActivity {
         binding.activityChatIvProfileImage.setImageBitmap(getProfileImage(receivedUser.getImage()));
     }
 
-    private void sendMessage() {
+    private void sendMessage(String imagePath) {
         HashMap<String, Object> message = new HashMap<>();
         message.put(Constants.KEY_SENDER_ID, currentUserId);
         message.put(Constants.KEY_RECEIVER_ID, receivedUser.getId());
-        message.put(Constants.KEY_MESSAGE, binding.activityChatEtMessage.getText().toString());
+        if (imagePath != null) {
+            message.put(Constants.KEY_IMAGE_MESSAGE, imagePath);
+        } else {
+            message.put(Constants.KEY_MESSAGE, binding.activityChatEtMessage.getText().toString());
+        }
         message.put(Constants.KEY_TIMESTAMP, new Date());
         database.collection(Constants.KEY_COLLECTION_MESSAGES).add(message);
         if (conversationId != null) {
-            updateConversation(binding.activityChatEtMessage.getText().toString());
+            if (imagePath != null) {
+                updateConversation("[Image]");
+            } else {
+                updateConversation(binding.activityChatEtMessage.getText().toString());
+            }
         } else {
             HashMap<String, Object> conversation = new HashMap<>();
             conversation.put(Constants.KEY_SENDER_ID, currentUserId);
@@ -188,7 +205,11 @@ public class ChatActivity extends BaseActivity {
             conversation.put(Constants.KEY_RECEIVER_ID, receivedUser.getId());
             conversation.put(Constants.KEY_RECEIVER_NAME, receivedUser.getName());
             conversation.put(Constants.KEY_RECEIVER_IMAGE, receivedUser.getImage());
-            conversation.put(Constants.KEY_LAST_MESSAGE, binding.activityChatEtMessage.getText().toString());
+            if (imagePath != null) {
+                conversation.put(Constants.KEY_LAST_MESSAGE, "[Image]");
+            } else {
+                conversation.put(Constants.KEY_LAST_MESSAGE, binding.activityChatEtMessage.getText().toString());
+            }
             conversation.put(Constants.KEY_TIMESTAMP, new Date());
             addConversation(conversation);
         }

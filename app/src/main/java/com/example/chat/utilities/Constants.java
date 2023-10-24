@@ -24,6 +24,7 @@ public class Constants {
     public static final String KEY_USER_FROM = "userFrom";
     public static final String KEY_USER_TO = "userTo";
     public static final String KEY_STATUS = "status";
+    public static final String KEY_IMAGE_MESSAGE = "imageMessage";
     public static final String VALUE_STATUS_FRIEND = "friend";
     public static final String VALUE_STATUS_REQUEST_SENT = "requestSent";
     public static final String VALUE_STATUS_REQUEST_RECEIVED = "requestReceived";

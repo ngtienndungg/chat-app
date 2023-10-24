@@ -1,7 +1,10 @@
 package com.example.chat.adapters;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -10,7 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.chat.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chat.databinding.ItemContainterSentMessageBinding;
 import com.example.chat.models.Message;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -52,7 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (getItemViewType(position) == VIEW_TYPE_SENT) {
             ((SentMessageViewHolder) holder).setData(messages.get(position));
         } else {
-            ((ReceivedMessageViewHolder) holder).setData(messages.get(position), receiverProfileImage);
+            ((ReceivedMessageViewHolder) holder).setData(messages.get(position));
         }
     }
 
@@ -79,8 +86,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void setData(Message message) {
-            binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
-            binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());
+            if (message.getMessageContent() != null) {
+                binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
+                binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());
+            } else {
+                binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
+                binding.itemContainerSentMessageImageLoading.setVisibility(View.VISIBLE);
+                binding.itemContainerSentMessageTvMessage.setVisibility(View.GONE);
+                StorageReference reference = FirebaseStorage.getInstance().getReference(message.getMessageImage());
+                File tempFile;
+                try {
+                    tempFile = File.createTempFile("tempFile", ".jpg");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                reference.getFile(tempFile).addOnCompleteListener(task -> {
+                    binding.itemContainerSentMessageImageLoading.setVisibility(View.GONE);
+                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                    binding.itemContainerSentMessageIvImage.setImageBitmap(bitmap);
+                    binding.itemContainerSentMessageIvImage.setVisibility(View.VISIBLE);
+                });
+            }
         }
     }
 
@@ -92,9 +118,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             binding = itemContainerReceivedMessageBinding;
         }
 
-        public void setData(Message message, Bitmap profileImage) {
-            binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
-            binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
+        public void setData(Message message) {
+            if (message.getMessageContent() != null) {
+                binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
+                binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
+                binding.itemContainerReceivedMessageTvMessage.setVisibility(View.GONE);
+            } else {
+                binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
+                binding.itemContainerReceivedMessageImageLoading.setVisibility(View.VISIBLE);
+                StorageReference reference = FirebaseStorage.getInstance().getReference(message.getMessageImage());
+                File tempFile;
+                try {
+                    tempFile = File.createTempFile("tempFile", ".jpg");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                reference.getFile(tempFile).addOnCompleteListener(task -> {
+                    binding.itemContainerReceivedMessageImageLoading.setVisibility(View.GONE);
+                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                    binding.itemContainerReceivedMessageIvImage.setImageBitmap(bitmap);
+                    binding.itemContainerReceivedMessageIvImage.setVisibility(View.VISIBLE);
+                });
+            }
         }
     }
 

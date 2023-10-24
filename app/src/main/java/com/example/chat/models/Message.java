@@ -6,6 +6,16 @@ public class Message {
     private String senderId;
     private String receiverId;
     private String messageContent;
+    private String messageImage;
+
+    public String getMessageImage() {
+        return messageImage;
+    }
+
+    public void setMessageImage(String messageImage) {
+        this.messageImage = messageImage;
+    }
+
     private String dateTime;
     private String conversationId;
     private String conversationName;
