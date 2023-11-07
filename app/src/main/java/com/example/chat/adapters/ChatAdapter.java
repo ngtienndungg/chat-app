@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chat.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chat.databinding.ItemContainterSentMessageBinding;
+import com.example.chat.listeners.MessageListener;
 import com.example.chat.models.Message;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -25,9 +26,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_RECEIVE = 0;
     private final List<Message> messages;
     private final String senderId;
+    private final MessageListener listener;
     private Bitmap receiverProfileImage;
 
-    public ChatAdapter(Bitmap receiverProfileImage, List<Message> messages, String senderId) {
+    public ChatAdapter(Bitmap receiverProfileImage, List<Message> messages, String senderId, MessageListener listener) {
+        this.listener = listener;
         this.receiverProfileImage = receiverProfileImage;
         this.messages = messages;
         this.senderId = senderId;
@@ -77,7 +80,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messages.size();
     }
 
-    public static class SentMessageViewHolder extends RecyclerView.ViewHolder {
+    public class SentMessageViewHolder extends RecyclerView.ViewHolder {
         private final ItemContainterSentMessageBinding binding;
 
         public SentMessageViewHolder(ItemContainterSentMessageBinding itemContainterSentMessageBinding) {
@@ -86,6 +89,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void setData(Message message) {
+            binding.getRoot().setOnLongClickListener(v -> {
+                listener.onHoldListener(message, getAdapterPosition());
+                return false;
+            });
             if (message.getMessageContent() != null) {
                 binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
                 binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());

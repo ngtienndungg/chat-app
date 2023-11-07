@@ -155,7 +155,7 @@
         android:layout_marginEnd="@dimen/_6sdp"
         android:layout_marginBottom="@dimen/_12sdp"
         android:background="@drawable/background_chat_input"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/activity_chat_flEmoteList"
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -169,13 +169,25 @@
     </FrameLayout>
 
     <ImageView
+        android:id="@+id/activity_chat_ivSelectEmote"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:src="@drawable/ic_emote"
+        app:layout_constraintBottom_toBottomOf="@id/activity_chat_etMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/activity_chat_etMessage"
+        app:tint="@color/colorSentIcon"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
         android:id="@+id/activity_chat_ivSelectImage"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="@dimen/_30sdp"
         android:layout_marginStart="@dimen/_6sdp"
         android:src="@drawable/ic_image"
         app:layout_constraintBottom_toBottomOf="@id/activity_chat_etMessage"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/activity_chat_ivSelectEmote"
         app:layout_constraintTop_toTopOf="@id/activity_chat_etMessage"
         app:tint="@color/colorSentIcon"
         tools:ignore="ContentDescription" />
@@ -198,5 +210,70 @@
         app:layout_constraintEnd_toStartOf="@id/activity_chat_flSend"
         app:layout_constraintStart_toEndOf="@id/activity_chat_ivSelectImage"
         app:layout_constraintTop_toTopOf="@id/activity_chat_flSend" />
+
+    <FrameLayout
+        android:id="@+id/activity_chat_flEmoteList"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_120sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintVertical_weight="2">
+
+        <ImageView
+            android:id="@+id/emote_1"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="top|start"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/emote_2"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="top|center"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/emote_3"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="top|end"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/emote_4"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="bottom|start"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/emote_5"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="bottom|center"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/emote_6"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_emote"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

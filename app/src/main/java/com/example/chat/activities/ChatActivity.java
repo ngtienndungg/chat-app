@@ -1,13 +1,18 @@
 package com.example.chat.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -17,6 +22,7 @@ import androidx.annotation.NonNull;
 import com.example.chat.R;
 import com.example.chat.adapters.ChatAdapter;
 import com.example.chat.databinding.ActivityChatBinding;
+import com.example.chat.listeners.MessageListener;
 import com.example.chat.models.Message;
 import com.example.chat.models.User;
 import com.example.chat.network.ApiClient;
@@ -32,11 +38,14 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,7 +59,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity implements MessageListener {
     private ActivityChatBinding binding;
     private User receivedUser;
     private ChatAdapter chatAdapter;
@@ -60,6 +69,7 @@ public class ChatActivity extends BaseActivity {
     private String currentUserId;
     private String conversationId;
     private boolean isOnline;
+    private static int indexEmote = 0;
     ActivityResultLauncher<String> getImage = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
@@ -152,6 +162,72 @@ public class ChatActivity extends BaseActivity {
         binding.activityChatIvSelectImage.setOnClickListener(v -> {
             getImage.launch("image/*");
         });
+        binding.activityChatTvName.setOnClickListener(v -> binding.activityChatFlEmoteList.setVisibility(View.GONE));
+        binding.activityChatIvSelectEmote.setOnClickListener(v -> {
+            for (int index = 1; index <= 6; index++) {
+                String imagePath = "stickers/" + index + ".png";
+                StorageReference reference = FirebaseStorage.getInstance().getReference(imagePath);
+                File tempFile;
+                try {
+                    tempFile = File.createTempFile("tempFile", ".jpg");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                reference.getFile(tempFile).addOnCompleteListener(task -> {
+                    indexEmote++;
+                    Log.d("ImageTest", tempFile.toString());
+                    if (indexEmote == 1) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote1.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    } else if (indexEmote == 2) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote2.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    } else if (indexEmote == 3) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote3.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    } else if (indexEmote == 4) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote4.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    } else if (indexEmote == 5) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote5.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    } else if (indexEmote == 6) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.emote6.setImageBitmap(bitmap);
+                        if (indexEmote == 6) {
+                            indexEmote = 0;
+                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+            }
+        });
+        binding.emote1.setOnClickListener(v -> sendMessage("stickers/1.png"));
+        binding.emote2.setOnClickListener(v -> sendMessage("stickers/2.png"));
+        binding.emote3.setOnClickListener(v -> sendMessage("stickers/3.png"));
+        binding.emote4.setOnClickListener(v -> sendMessage("stickers/4.png"));
+        binding.emote5.setOnClickListener(v -> sendMessage("stickers/5.png"));
+        binding.emote6.setOnClickListener(v -> sendMessage("stickers/6.png"));
     }
 
     private Bitmap getProfileImage(String encodedImage) {
@@ -172,7 +248,8 @@ public class ChatActivity extends BaseActivity {
         chatAdapter = new ChatAdapter(
                 getProfileImage(receivedUser.getImage()),
                 messages,
-                currentUserId
+                currentUserId,
+                this
         );
         binding.activityChatRvMessage.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
@@ -340,5 +417,14 @@ public class ChatActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         listenUserAvailability();
+    }
+
+    @Override
+    public void onHoldListener(Message message, int position) {
+        PopupWindow popupWindow;
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_menu_message_item, findViewById(R.id.layout_delete));
+        popupWindow = new PopupWindow(view, 350, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.showAsDropDown(Objects.requireNonNull(binding.activityChatRvMessage.findViewHolderForAdapterPosition(position)).itemView.findViewById(R.id.item_container_sent_message_tvMessage), -50, -60);
     }
 }
