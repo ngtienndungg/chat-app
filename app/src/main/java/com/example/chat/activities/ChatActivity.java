@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -164,6 +164,7 @@ public class ChatActivity extends BaseActivity implements MessageListener {
         });
         binding.activityChatTvName.setOnClickListener(v -> binding.activityChatFlEmoteList.setVisibility(View.GONE));
         binding.activityChatIvSelectEmote.setOnClickListener(v -> {
+            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
             for (int index = 1; index <= 6; index++) {
                 String imagePath = "stickers/" + index + ".png";
                 StorageReference reference = FirebaseStorage.getInstance().getReference(imagePath);
@@ -173,61 +174,17 @@ public class ChatActivity extends BaseActivity implements MessageListener {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+
+                int finalIndex = index;
                 reference.getFile(tempFile).addOnCompleteListener(task -> {
-                    indexEmote++;
-                    Log.d("ImageTest", tempFile.toString());
-                    if (indexEmote == 1) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote1.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
-                    } else if (indexEmote == 2) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote2.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
-                    } else if (indexEmote == 3) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote3.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
-                    } else if (indexEmote == 4) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote4.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
-                    } else if (indexEmote == 5) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote5.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
-                    } else if (indexEmote == 6) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                        binding.emote6.setImageBitmap(bitmap);
-                        if (indexEmote == 6) {
-                            indexEmote = 0;
-                            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-                        }
+                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                    ImageView targetImageView = (ImageView) binding.activityChatFlEmoteList.getChildAt(finalIndex - 1);
+                    if (targetImageView != null) {
+                        targetImageView.setImageBitmap(bitmap);
                     }
                 });
             }
         });
-        binding.emote1.setOnClickListener(v -> sendMessage("stickers/1.png"));
-        binding.emote2.setOnClickListener(v -> sendMessage("stickers/2.png"));
-        binding.emote3.setOnClickListener(v -> sendMessage("stickers/3.png"));
-        binding.emote4.setOnClickListener(v -> sendMessage("stickers/4.png"));
-        binding.emote5.setOnClickListener(v -> sendMessage("stickers/5.png"));
-        binding.emote6.setOnClickListener(v -> sendMessage("stickers/6.png"));
     }
 
     private Bitmap getProfileImage(String encodedImage) {
