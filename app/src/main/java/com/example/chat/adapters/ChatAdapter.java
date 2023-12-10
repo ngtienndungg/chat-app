@@ -93,11 +93,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 listener.onHoldListener(message, getAdapterPosition());
                 return false;
             });
+            binding.itemContainerSentMessageIvImage.setImageBitmap(null);
+
             if (message.getMessageContent() != null) {
                 binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
                 binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());
+                binding.itemContainerSentMessageTvDatetime.setVisibility(View.VISIBLE);
+                binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
             } else {
                 binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
+                binding.itemContainerSentMessageTvDatetime.setVisibility(View.GONE);
                 binding.itemContainerSentMessageImageLoading.setVisibility(View.VISIBLE);
                 binding.itemContainerSentMessageTvMessage.setVisibility(View.GONE);
                 StorageReference reference = FirebaseStorage.getInstance().getReference(message.getMessageImage());
@@ -109,9 +114,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 reference.getFile(tempFile).addOnCompleteListener(task -> {
                     binding.itemContainerSentMessageImageLoading.setVisibility(View.GONE);
-                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                    binding.itemContainerSentMessageIvImage.setImageBitmap(bitmap);
-                    binding.itemContainerSentMessageIvImage.setVisibility(View.VISIBLE);
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.itemContainerSentMessageIvImage.setImageBitmap(bitmap);
+                        binding.itemContainerSentMessageIvImage.setVisibility(View.VISIBLE);
+                    }
                 });
             }
         }
@@ -126,13 +133,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void setData(Message message) {
+            binding.itemContainerReceivedMessageIvImage.setImageBitmap(null);
+
             if (message.getMessageContent() != null) {
                 binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
                 binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
-                binding.itemContainerReceivedMessageTvMessage.setVisibility(View.GONE);
+                binding.itemContainerReceivedMessageTvDatetime.setVisibility(View.VISIBLE);
+                binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
             } else {
                 binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
+                binding.itemContainerReceivedMessageTvDatetime.setVisibility(View.GONE);
                 binding.itemContainerReceivedMessageImageLoading.setVisibility(View.VISIBLE);
+                binding.itemContainerReceivedMessageTvMessage.setVisibility(View.GONE);
                 StorageReference reference = FirebaseStorage.getInstance().getReference(message.getMessageImage());
                 File tempFile;
                 try {
@@ -142,13 +154,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 reference.getFile(tempFile).addOnCompleteListener(task -> {
                     binding.itemContainerReceivedMessageImageLoading.setVisibility(View.GONE);
-                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                    binding.itemContainerReceivedMessageIvImage.setImageBitmap(bitmap);
-                    binding.itemContainerReceivedMessageIvImage.setVisibility(View.VISIBLE);
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        binding.itemContainerReceivedMessageIvImage.setImageBitmap(bitmap);
+                        binding.itemContainerReceivedMessageIvImage.setVisibility(View.VISIBLE);
+                    }
                 });
             }
         }
     }
-
-
 }

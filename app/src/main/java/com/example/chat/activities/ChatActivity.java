@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -44,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -69,13 +71,21 @@ public class ChatActivity extends BaseActivity implements MessageListener {
     private String currentUserId;
     private String conversationId;
     private boolean isOnline;
-    private static int indexEmote = 0;
     ActivityResultLauncher<String> getImage = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
                     Long time = System.currentTimeMillis();
                     String imagePath = "images/" + currentUserId + "/" + time;
-                    FirebaseStorage.getInstance().getReference(imagePath).putFile(uri).addOnCompleteListener(task -> {
+                    Bitmap bitmap;
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                    byte[] fileInBytes = byteArrayOutputStream.toByteArray();
+                    FirebaseStorage.getInstance().getReference(imagePath).putBytes(fileInBytes).addOnCompleteListener(task -> {
                         sendMessage(imagePath);
                     });
                 }
@@ -164,25 +174,35 @@ public class ChatActivity extends BaseActivity implements MessageListener {
         });
         binding.activityChatTvName.setOnClickListener(v -> binding.activityChatFlEmoteList.setVisibility(View.GONE));
         binding.activityChatIvSelectEmote.setOnClickListener(v -> {
-            binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
-            for (int index = 1; index <= 6; index++) {
-                String imagePath = "stickers/" + index + ".png";
-                StorageReference reference = FirebaseStorage.getInstance().getReference(imagePath);
-                File tempFile;
-                try {
-                    tempFile = File.createTempFile("tempFile", ".jpg");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                int finalIndex = index;
-                reference.getFile(tempFile).addOnCompleteListener(task -> {
-                    Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-                    ImageView targetImageView = (ImageView) binding.activityChatFlEmoteList.getChildAt(finalIndex - 1);
-                    if (targetImageView != null) {
-                        targetImageView.setImageBitmap(bitmap);
+            if (binding.activityChatFlEmoteList.getVisibility() == View.VISIBLE) {
+                binding.activityChatFlEmoteList.setVisibility(View.GONE);
+            } else if (binding.activityChatFlEmoteList.getVisibility() == View.GONE) {
+                binding.activityChatFlEmoteList.setVisibility(View.VISIBLE);
+                for (int index = 1; index <= 6; index++) {
+                    String imagePath = "stickers/" + index + ".png";
+                    StorageReference reference = FirebaseStorage.getInstance().getReference(imagePath);
+                    File tempFile;
+                    try {
+                        tempFile = File.createTempFile("tempFile", ".jpg");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                });
+
+                    int finalIndex = index;
+                    reference.getFile(tempFile).addOnCompleteListener(task -> {
+                        Bitmap bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                        ImageView targetImageView = (ImageView) binding.activityChatFlEmoteList.getChildAt(finalIndex - 1);
+                        if (targetImageView != null) {
+                            targetImageView.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+                binding.emote1.setOnClickListener(v1 -> sendMessage("stickers/1.png"));
+                binding.emote2.setOnClickListener(v1 -> sendMessage("stickers/2.png"));
+                binding.emote3.setOnClickListener(v1 -> sendMessage("stickers/3.png"));
+                binding.emote4.setOnClickListener(v1 -> sendMessage("stickers/4.png"));
+                binding.emote5.setOnClickListener(v1 -> sendMessage("stickers/5.png"));
+                binding.emote6.setOnClickListener(v1 -> sendMessage("stickers/6.png"));
             }
         });
     }

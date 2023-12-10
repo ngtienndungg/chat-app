@@ -1,4 +1,6 @@
+
 <resources>
+    <!--
     <string name="app_name">Trò chuyện</string>
     <string name="welcome_back">Chào mừng quay trở lại</string>
     <string name="login_to_continue">Đăng nhập để tiếp tục</string>
@@ -52,4 +54,5 @@
     <string name="accept">Accept</string>
     <string name="unsent">Unsent</string>
     <string name="no_user_match">No users match your result</string>
+    -->
 </resources>

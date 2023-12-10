@@ -111,7 +111,7 @@
             android:layout_height="@dimen/_12sdp"
             android:layout_gravity="center"
             android:src="@drawable/ic_online"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/activity_chat_ivProfileImage"
             app:layout_constraintEnd_toEndOf="@id/activity_chat_ivProfileImage" />
 
@@ -214,7 +214,7 @@
     <FrameLayout
         android:id="@+id/activity_chat_flEmoteList"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_120sdp"
+        android:layout_height="@dimen/_130sdp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="3"
@@ -224,8 +224,9 @@
             android:id="@+id/emote_1"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="top|start"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 
@@ -233,8 +234,8 @@
             android:id="@+id/emote_2"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="top|center"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 
@@ -242,8 +243,9 @@
             android:id="@+id/emote_3"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="top|end"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 
@@ -251,8 +253,9 @@
             android:id="@+id/emote_4"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="bottom|start"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 
@@ -260,8 +263,8 @@
             android:id="@+id/emote_5"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="bottom|center"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 
@@ -269,8 +272,9 @@
             android:id="@+id/emote_6"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:scaleType="fitCenter"
             android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_emote"
             tools:ignore="ContentDescription" />
 

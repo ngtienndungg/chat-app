@@ -52,4 +52,7 @@
     <string name="accept">Accept</string>
     <string name="unsent">Unsent</string>
     <string name="no_user_match">No users match your result</string>
+    <string name="update_information">Update information</string>
+    <string name="change_password">Change Password</string>
+    <string name="recall_message">Recall your message</string>
 </resources>

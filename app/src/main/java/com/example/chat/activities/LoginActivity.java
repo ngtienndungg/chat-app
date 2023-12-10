@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.activityLoginTvCreateAccount.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
         binding.activityLoginBtSignIn.setOnClickListener(v -> signIn());
+        binding.activityLoginTvForgotPassword.setOnClickListener(v -> startActivity(new Intent(this, ForgotPasswordActivity.class)));
     }
 
     private void signIn() {
