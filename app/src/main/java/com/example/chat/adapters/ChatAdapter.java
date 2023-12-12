@@ -1,5 +1,6 @@
 package com.example.chat.adapters;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chat.R;
 import com.example.chat.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chat.databinding.ItemContainterSentMessageBinding;
 import com.example.chat.listeners.MessageListener;
@@ -28,12 +30,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String senderId;
     private final MessageListener listener;
     private Bitmap receiverProfileImage;
+    private static Context context;
 
-    public ChatAdapter(Bitmap receiverProfileImage, List<Message> messages, String senderId, MessageListener listener) {
+    public ChatAdapter(Bitmap receiverProfileImage, List<Message> messages, String senderId, MessageListener listener, Context context) {
         this.listener = listener;
         this.receiverProfileImage = receiverProfileImage;
         this.messages = messages;
         this.senderId = senderId;
+        ChatAdapter.context = context;
     }
 
     public void setReceiverProfileImage(Bitmap bitmap) {
@@ -97,6 +101,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getMessageContent() != null) {
                 binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
+                if (message.getMessageContent().equals("Message has been recalled")) {
+                    binding.itemContainerSentMessageTvMessage.setTextColor(context.getColor(R.color.colorError));
+                } else {
+                    binding.itemContainerSentMessageTvMessage.setTextColor(context.getColor(R.color.colorWhite));
+                }
                 binding.itemContainerSentMessageTvDatetime.setText(message.getDateTime());
                 binding.itemContainerSentMessageTvDatetime.setVisibility(View.VISIBLE);
                 binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
@@ -137,6 +146,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getMessageContent() != null) {
                 binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
+                if (message.getMessageContent().equals("Message has been recalled")) {
+                    binding.itemContainerReceivedMessageTvMessage.setTextColor(context.getColor(R.color.colorError));
+                } else {
+                    binding.itemContainerReceivedMessageTvMessage.setTextColor(context.getColor(R.color.colorWhite));
+                }
                 binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
                 binding.itemContainerReceivedMessageTvDatetime.setVisibility(View.VISIBLE);
                 binding.getRoot().setBackgroundColor(Color.TRANSPARENT);

@@ -1,7 +1,7 @@
 package com.example.chat.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,16 +9,19 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.chat.R;
 import com.example.chat.adapters.ChatAdapter;
@@ -31,6 +34,9 @@ import com.example.chat.network.ApiService;
 import com.example.chat.utilities.Constants;
 import com.example.chat.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -55,6 +61,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -106,6 +113,7 @@ public class ChatActivity extends BaseActivity implements MessageListener {
             for (DocumentChange documentChange : value.getDocumentChanges()) {
                 if (documentChange.getType() == DocumentChange.Type.ADDED) {
                     Message message = new Message();
+                    message.setMessageId(documentChange.getDocument().getId());
                     message.setSenderId(documentChange.getDocument().getString(Constants.KEY_SENDER_ID));
                     message.setReceiverId(documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID));
                     if (documentChange.getDocument().getString(Constants.KEY_MESSAGE) != null) {
@@ -116,6 +124,19 @@ public class ChatActivity extends BaseActivity implements MessageListener {
                     message.setDateTime(formatDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP)));
                     message.setDateObject(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     messages.add(message);
+                } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
+                    Message message = new Message();
+                    message.setMessageId(documentChange.getDocument().getId());
+                    int position = 0;
+                    for (int i = 0; i < messages.size(); i++) {
+                        if (messages.get(i).getMessageId().equals(message.getMessageId())) {
+                            messages.get(i).setMessageContent(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
+                            position = i;
+                            break;
+                        }
+                    }
+                    chatAdapter.notifyItemChanged(position);
+                    return;
                 }
             }
             messages.sort(Comparator.comparing(Message::getDateObject));
@@ -226,6 +247,7 @@ public class ChatActivity extends BaseActivity implements MessageListener {
                 getProfileImage(receivedUser.getImage()),
                 messages,
                 currentUserId,
+                this,
                 this
         );
         binding.activityChatRvMessage.setAdapter(chatAdapter);
@@ -398,10 +420,50 @@ public class ChatActivity extends BaseActivity implements MessageListener {
 
     @Override
     public void onHoldListener(Message message, int position) {
-        PopupWindow popupWindow;
-        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.layout_menu_message_item, findViewById(R.id.layout_delete));
-        popupWindow = new PopupWindow(view, 350, LinearLayout.LayoutParams.WRAP_CONTENT, true);
-        popupWindow.showAsDropDown(Objects.requireNonNull(binding.activityChatRvMessage.findViewHolderForAdapterPosition(position)).itemView.findViewById(R.id.item_container_sent_message_tvMessage), -50, -60);
+        ModalBottomSheet modalBottomSheet = new ModalBottomSheet(message);
+        modalBottomSheet.show(getSupportFragmentManager(), "ModalBottomSheet");
+    }
+
+    public static class ModalBottomSheet extends BottomSheetDialogFragment {
+        private final Message message;
+
+        ModalBottomSheet(Message message) {
+            this.message = message;
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.layout_bottom_sheet, container, false);
+            view.findViewById(R.id.tvRecall).setOnClickListener(v -> {
+                DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_MESSAGES).document(message.getMessageId());
+                Map<String, Object> updateData = new HashMap<>();
+                updateData.put(Constants.KEY_MESSAGE, "Message has been recalled");
+                documentReference.update(updateData)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("FirestoreUpdate", "Message field updated successfully!");
+                        })
+                        .addOnFailureListener(e -> Log.e("FirestoreUpdate", "Error updating message field", e));
+            });
+            return view;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+
+            dialog.setOnShowListener(dialog1 -> {
+                BottomSheetDialog bottom_dialog = (BottomSheetDialog) dialog1;
+
+                FrameLayout bottomSheet = bottom_dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                assert bottomSheet != null;
+                DisplayMetrics displayMetrics = requireActivity().getResources().getDisplayMetrics();
+                int height = displayMetrics.heightPixels;
+                int maxHeight = (int) (height * 0.10);
+                BottomSheetBehavior.from(bottomSheet).setPeekHeight(maxHeight);
+            });
+            return dialog;
+        }
     }
 }

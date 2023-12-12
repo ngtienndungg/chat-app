@@ -30,6 +30,7 @@ public class Constants {
     public static final String VALUE_STATUS_REQUEST_RECEIVED = "requestReceived";
     public static final String VALUE_STATUS_REQUEST_REJECTED = "requestRejected";
     public static final String VALUE_STATUS_FRIEND_DELETED = "friendDeleted";
+    public static final String KEY_IS_DELETE = "delete";
     public static final String VALUE_MESSAGE_DELETE = "messageDelete";
     public static final String KEY_SENDER_IMAGE = "senderImage";
     public static final String KEY_RECEIVER_IMAGE = "receiverImage";

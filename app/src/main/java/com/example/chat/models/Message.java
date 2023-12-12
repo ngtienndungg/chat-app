@@ -3,10 +3,46 @@ package com.example.chat.models;
 import java.util.Date;
 
 public class Message {
+    private String messageId;
     private String senderId;
     private String receiverId;
     private String messageContent;
     private String messageImage;
+    private boolean isDelete;
+    private boolean isReceived;
+    private boolean isSeen;
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    public boolean isReceived() {
+        return isReceived;
+    }
+
+    public void setReceived(boolean received) {
+        isReceived = received;
+    }
+
+    public boolean isSeen() {
+        return isSeen;
+    }
+
+    public void setSeen(boolean seen) {
+        isSeen = seen;
+    }
 
     public String getMessageImage() {
         return messageImage;
