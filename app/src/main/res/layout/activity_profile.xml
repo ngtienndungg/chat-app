@@ -26,7 +26,7 @@
             android:textStyle="bold" />
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/activity_register_ivProfile"
+            android:id="@+id/activity_profile_ivProfile"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_80sdp"
             android:layout_marginTop="@dimen/_20sdp"
@@ -35,7 +35,7 @@
             app:riv_oval="true" />
 
         <TextView
-            android:id="@+id/activity_register_tvSelectImage"
+            android:id="@+id/activity_profile_tvSelectImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -46,7 +46,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/activity_register_etInputName"
+            android:id="@+id/activity_profile_etInputName"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_45sdp"
             android:layout_marginTop="@dimen/_18sdp"
@@ -60,7 +60,7 @@
             android:textSize="@dimen/_13ssp" />
 
         <EditText
-            android:id="@+id/activity_register_etInputEmail"
+            android:id="@+id/activity_profile_etInputEmail"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_45sdp"
             android:layout_marginTop="@dimen/_16sdp"
@@ -80,7 +80,7 @@
             android:animateLayoutChanges="true">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/activity_register_btSignUp"
+                android:id="@+id/activity_profile_btUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
                 android:text="@string/update_information"
@@ -91,7 +91,7 @@
                 app:cornerRadius="@dimen/_8sdp" />
 
             <ProgressBar
-                android:id="@+id/activity_register_pbSignUp"
+                android:id="@+id/activity_profile_pbSignUp"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_gravity="center"
@@ -106,7 +106,7 @@
             android:animateLayoutChanges="true">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/activity_register_btChangePassword"
+                android:id="@+id/activity_profile_btChangePassword"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
                 android:text="@string/change_password"
@@ -117,7 +117,7 @@
                 app:cornerRadius="@dimen/_8sdp" />
 
             <ProgressBar
-                android:id="@+id/activity_register_pbChangePassword"
+                android:id="@+id/activity_profile_pbChangePassword"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_gravity="center"

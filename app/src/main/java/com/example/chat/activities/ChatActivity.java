@@ -2,6 +2,7 @@ package com.example.chat.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -166,6 +168,12 @@ public class ChatActivity extends BaseActivity implements MessageListener {
     }
 
     private void eventHandling() {
+        binding.activityChatCtlUser.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("FromChat", "Chat");
+            intent.putExtra("User", receivedUser);
+            startActivity(intent);
+        });
         binding.activityChatIvBack.setOnClickListener(v -> onBackPressed());
         binding.activityChatFlSend.setOnClickListener(v -> sendMessage(null));
         binding.activityChatEtMessage.addTextChangedListener(new TextWatcher() {
@@ -439,6 +447,7 @@ public class ChatActivity extends BaseActivity implements MessageListener {
                 DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.KEY_COLLECTION_MESSAGES).document(message.getMessageId());
                 Map<String, Object> updateData = new HashMap<>();
                 updateData.put(Constants.KEY_MESSAGE, "Message has been recalled");
+                updateData.put(Constants.KEY_IMAGE_MESSAGE, FieldValue.delete());
                 documentReference.update(updateData)
                         .addOnSuccessListener(aVoid -> {
                             Log.d("FirestoreUpdate", "Message field updated successfully!");

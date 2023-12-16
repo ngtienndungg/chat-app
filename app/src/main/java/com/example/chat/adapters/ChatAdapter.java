@@ -101,7 +101,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getMessageContent() != null) {
                 binding.itemContainerSentMessageTvMessage.setText(message.getMessageContent());
-                if (message.getMessageContent().equals("Message has been recalled")) {
+                if (message.getMessageContent().equals("This message has been recalled")) {
                     binding.itemContainerSentMessageTvMessage.setTextColor(context.getColor(R.color.colorError));
                 } else {
                     binding.itemContainerSentMessageTvMessage.setTextColor(context.getColor(R.color.colorWhite));
@@ -146,10 +146,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getMessageContent() != null) {
                 binding.itemContainerReceivedMessageTvMessage.setText(message.getMessageContent());
-                if (message.getMessageContent().equals("Message has been recalled")) {
+                if (message.getMessageContent().equals("This message has been recalled")) {
                     binding.itemContainerReceivedMessageTvMessage.setTextColor(context.getColor(R.color.colorError));
                 } else {
-                    binding.itemContainerReceivedMessageTvMessage.setTextColor(context.getColor(R.color.colorWhite));
+                    binding.itemContainerReceivedMessageTvMessage.setTextColor(context.getColor(R.color.colorBlack));
                 }
                 binding.itemContainerReceivedMessageTvDatetime.setText(message.getDateTime());
                 binding.itemContainerReceivedMessageTvDatetime.setVisibility(View.VISIBLE);

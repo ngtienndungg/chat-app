@@ -13,7 +13,8 @@
         android:layout_marginHorizontal="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_6sdp"
         android:background="@drawable/background_relationship"
-        android:padding="@dimen/_4sdp">
+        android:paddingHorizontal="@dimen/_2sdp"
+        android:paddingVertical="@dimen/_8sdp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/ivProfile"
